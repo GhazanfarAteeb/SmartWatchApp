@@ -1,0 +1,19 @@
+<resources>
+	<string name="app_name">Smart Watch App</string>
+	<string name="login_message">Please fill this form to login.</string>
+	<string name="login">Login</string>
+	<string name="welcome">Welcome!</string>
+	<string name="mac_address">MAC Address</string>
+	<string name="watch_name">Watch Name</string>
+	<string name="insights">Insights</string>
+	<string name="blood_oxygen">-- %</string>
+	<string name="heart_rate">-- BPM</string>
+	<string name="str_heart_rate">Heart Rate</string>
+	<string name="str_blood_oxygen">Blood Oxygen</string>
+	<string name="blood_pressure">---/--</string>
+	<string name="str_blood_pressure">Blood Pressure</string>
+	
+	<string name="state_connecting">Connecting</string>
+	<string name="state_connected">Connected</string>
+	<string name="state_disconnected">Disconnected</string>
+</resources>
