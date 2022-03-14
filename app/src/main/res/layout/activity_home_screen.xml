@@ -114,7 +114,7 @@
 							android:layout_alignParentEnd="true"
 							android:textColor="@color/green"
 							android:fontFamily="@font/poppins_medium"
-							android:text="Connected"/>
+							android:text="@string/connected"/>
 						
 						<ImageView
 							android:id="@+id/iv_unlink"
@@ -123,6 +123,7 @@
 							android:layout_alignParentEnd="true"
 							android:layout_alignParentBottom="true"
 							android:elevation="5dp"
+							android:scaleType="fitEnd"
 							android:src="@drawable/ic_unlink" />
 					</RelativeLayout>
 				</androidx.cardview.widget.CardView>
@@ -132,16 +133,17 @@
 				android:padding="10dp"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
+				
 				<TextView
-					android:padding="10dp"
 					android:id="@+id/tv_insights"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:fontFamily="@font/poppins_medium"
+					android:padding="10dp"
 					android:text="@string/insights"
 					android:textColor="@color/black"
 					android:textSize="22sp"
-					android:textStyle="bold"/>
+					android:textStyle="bold" />
 				<LinearLayout
 					android:id="@+id/ll_rates_view_1"
 					android:layout_below="@id/tv_insights"
@@ -181,6 +183,7 @@
 							</LinearLayout>
 							
 							<TextView
+								android:id="@+id/tv_heart_rate"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_below="@id/ll_heart_rate"
@@ -227,17 +230,19 @@
 									android:textSize="16sp"
 									android:textStyle="bold" />
 							</LinearLayout>
+							
 							<TextView
-								android:layout_marginTop="10dp"
-								android:layout_below="@id/ll_blood_oxygen"
-								android:layout_centerHorizontal="true"
+								android:id="@+id/tv_blood_oxygen"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
+								android:layout_below="@id/ll_blood_oxygen"
+								android:layout_centerHorizontal="true"
+								android:layout_marginTop="10dp"
 								android:fontFamily="@font/poppins_medium"
-								android:textSize="26sp"
+								android:text="@string/blood_oxygen"
 								android:textColor="@color/black"
-								android:textStyle="bold"
-								android:text="@string/blood_oxygen"/>
+								android:textSize="26sp"
+								android:textStyle="bold" />
 						</RelativeLayout>
 					</androidx.cardview.widget.CardView>
 				</LinearLayout>
@@ -280,6 +285,7 @@
 							</LinearLayout>
 							
 							<TextView
+								android:id="@+id/tv_blood_pressure"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_below="@id/ll_blood_pressure"

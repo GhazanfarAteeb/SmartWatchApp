@@ -1,6 +1,7 @@
 package com.app.smartwatchapp.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -15,16 +16,27 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.smartwatchapp.Adapters.AdapterWatch;
 import com.app.smartwatchapp.App;
+import com.app.smartwatchapp.Listeners.SmartWatchListeners;
 import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.PermissionUtils.Permissions;
 import com.app.smartwatchapp.R;
+import com.crrepa.ble.conn.bean.CRPBloodOxygenInfo;
+import com.crrepa.ble.conn.bean.CRPHeartRateInfo;
+import com.crrepa.ble.conn.bean.CRPMovementHeartRateInfo;
 import com.crrepa.ble.conn.listener.CRPBleConnectionStateListener;
+import com.crrepa.ble.conn.listener.CRPBloodOxygenChangeListener;
+import com.crrepa.ble.conn.listener.CRPBloodPressureChangeListener;
+import com.crrepa.ble.conn.listener.CRPHeartRateChangeListener;
+import com.crrepa.ble.conn.type.CRPHeartRateType;
+import com.crrepa.ble.conn.type.CRPHistoryDynamicRateType;
 import com.crrepa.ble.scan.bean.CRPScanDevice;
 import com.crrepa.ble.scan.callback.CRPScanCallback;
 
@@ -48,9 +60,105 @@ public class HomeScreen extends AppCompatActivity {
     private static final String[] PERMISSION_UPDATE_BAND_CONFIG = new String[]{
             "android.permission.ACCESS_FINE_LOCATION"
     };
-    TextView tvWatchName;
-    TextView tvWatchMACAddress;
+    TextView tvWatchName, tvWatchMACAddress;
+    public TextView tvHeartRate, tvBloodOxygen, tvBloodPressure;
     ImageView ivUnlink;
+    ProgressDialog progressDialog;
+    public CRPHeartRateChangeListener heartRateChangeListener = new CRPHeartRateChangeListener() {
+        @Override
+        public void onMeasuring(int i) {
+
+        }
+
+        @Override
+        public void onOnceMeasureComplete(int i) {
+            tvHeartRate.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (i!= 0 ) {
+                        tvHeartRate.setText(i + " BPM");
+                        AdapterWatch.mBleConnection.startMeasureBloodOxygen();
+                        progressDialog.setMessage("Getting Blood Oxygen Reading...");
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onMeasureComplete(CRPHistoryDynamicRateType crpHistoryDynamicRateType, CRPHeartRateInfo crpHeartRateInfo) {
+
+        }
+
+        @Override
+        public void on24HourMeasureResult(CRPHeartRateInfo crpHeartRateInfo) {
+//            List<Integer> last24HoursHRList = crpHeartRateInfo.getHeartRateList();
+//            List<Integer> removalList = new ArrayList<>();
+//            removalList.add(0);
+//            last24HoursHRList.removeAll(removalList);
+//            averageHeartRate = 0;
+//            for (Integer heartRate : last24HoursHRList) {
+//                if (heartRate!=0) {
+//                    averageHeartRate += heartRate;
+//                }
+//            }
+//            Log.d("crp_size", String.valueOf(last24HoursHRList.size()));
+//            Log.d("LAST_24_HOURS_HR_LIST", last24HoursHRList.toString());
+//            averageHeartRate /= last24HoursHRList.size();
+//            tvHeartRate.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    tvHeartRate.setText(averageHeartRate +" BPM");
+//                }
+//            });
+        }
+
+        @Override
+        public void onMovementMeasureResult(List<CRPMovementHeartRateInfo> list) {
+
+        }
+    };
+
+    public CRPBloodOxygenChangeListener bloodOxygenChangeListener = new CRPBloodOxygenChangeListener() {
+        @Override
+        public void onTimingMeasure(int i) {
+
+        }
+
+        @Override
+        public void onBloodOxygenChange(int i) {
+            Log.d("BLOOD_OXYGEN : ", String.valueOf(i));
+                tvBloodOxygen.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (i != 0) {
+                            tvBloodOxygen.setText(i + " %");
+                            AdapterWatch.mBleConnection.startMeasureBloodPressure();
+                            progressDialog.setMessage("Getting Blood Pressure Reading...");
+                        }
+                    }
+                });
+        }
+
+        @Override
+        public void onTimingMeasureResult(CRPBloodOxygenInfo crpBloodOxygenInfo) {
+//            Log.d("Blood_OXYGEN_INFO_SIZE : ", crpBloodOxygenInfo.getList().toString());
+//            Log.d("Blood_OXYGEN_INFO_LIST : ", crpBloodOxygenInfo.getList().toString());
+        }
+    };
+
+    public CRPBloodPressureChangeListener bloodPressureChangeListener = new CRPBloodPressureChangeListener() {
+        @Override
+        public void onBloodPressureChange(int i, int i1) {
+            tvBloodPressure.post(new Runnable() {
+                @Override
+                public void run() {
+                    tvBloodPressure.setText(i+"/"+i1);
+                }
+            });
+            progressDialog.dismiss();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,14 +169,21 @@ public class HomeScreen extends AppCompatActivity {
         AdapterWatch.SendState sendState = new AdapterWatch.SendState() {
             @Override
             public void changeState(final int state, Watch watch) {
+                AdapterWatch.mBleConnection.setHeartRateChangeListener(heartRateChangeListener);
+                AdapterWatch.mBleConnection.setBloodOxygenChangeListener(bloodOxygenChangeListener);
+                AdapterWatch.mBleConnection.setBloodPressureChangeListener(bloodPressureChangeListener);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (state == CRPBleConnectionStateListener.STATE_CONNECTED) {
+                            progressDialog.setMessage("Getting Heart Rate Reading...");
+                            progressDialog.show();
                             cvWatch.setVisibility(View.VISIBLE);
                             rvWatchList.setVisibility(View.GONE);
                             tvWatchName.setText(watch.getWatchName());
                             tvWatchMACAddress.setText(watch.getWatchMACAddress());
+                            AdapterWatch.mBleConnection.startMeasureOnceHeartRate();
+
                             ivUnlink.setOnClickListener(view -> {
                                 AdapterWatch.mBleDevice.disconnect();
                                 AdapterWatch.mBleConnection.close();
@@ -83,7 +198,6 @@ public class HomeScreen extends AppCompatActivity {
         };
         adapterWatch.setChangeStateCallback(sendState);
         requestPermissions();
-        startScan();
         rvWatchList.setLayoutManager(new LinearLayoutManager(context));
     }
 
@@ -95,8 +209,15 @@ public class HomeScreen extends AppCompatActivity {
         cvWatch.setVisibility(View.GONE);
         rvWatchList.setVisibility(View.VISIBLE);
         ivUnlink = findViewById(R.id.iv_unlink);
+        tvHeartRate = findViewById(R.id.tv_heart_rate);
+        tvBloodOxygen = findViewById(R.id.tv_blood_oxygen);
+        tvBloodPressure = findViewById(R.id.tv_blood_pressure);
+
         if (!App.getBleClient(context).isBluetoothEnable()) {
-            startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1);
+        }
+        else {
+            startScan();
         }
     }
 
@@ -123,8 +244,9 @@ public class HomeScreen extends AppCompatActivity {
             scanDeviceList.clear();
             watchList.clear();
         }
-        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Scanning...");
+        progressDialog.setCancelable(false);
         progressDialog.show();
         try {
             boolean success = App.getBleClient(context).scanDevice(new CRPScanCallback() {
@@ -168,5 +290,13 @@ public class HomeScreen extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         recreate();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (RESULT_OK == resultCode) {
+            startScan();
+        }
     }
 }

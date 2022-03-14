@@ -11,7 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.smartwatchapp.Activities.HomeScreen;
 import com.app.smartwatchapp.App;
+import com.app.smartwatchapp.Listeners.SmartWatchListeners;
 import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.R;
 import com.crrepa.ble.CRPBleClient;
@@ -55,10 +57,10 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
         holder.itemView.setOnClickListener(view -> {
             progressDialog = new ProgressDialog(context);
             progressDialog.setMessage("Connecting to " + watch.getWatchName());
+            progressDialog.setCancelable(false);
             mBleClient = App.getBleClient(context);
             mBleDevice = mBleClient.getBleDevice(watch.getWatchMACAddress());
             if (mBleDevice != null && !mBleDevice.isConnected()) {
-
                 connect(watch);
             }
         });
