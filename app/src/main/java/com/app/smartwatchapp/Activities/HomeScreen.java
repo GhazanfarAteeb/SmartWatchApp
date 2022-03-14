@@ -18,13 +18,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.smartwatchapp.Adapters.AdapterWatch;
 import com.app.smartwatchapp.App;
-import com.app.smartwatchapp.Listeners.SmartWatchListeners;
 import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.PermissionUtils.Permissions;
 import com.app.smartwatchapp.R;
@@ -35,7 +33,6 @@ import com.crrepa.ble.conn.listener.CRPBleConnectionStateListener;
 import com.crrepa.ble.conn.listener.CRPBloodOxygenChangeListener;
 import com.crrepa.ble.conn.listener.CRPBloodPressureChangeListener;
 import com.crrepa.ble.conn.listener.CRPHeartRateChangeListener;
-import com.crrepa.ble.conn.type.CRPHeartRateType;
 import com.crrepa.ble.conn.type.CRPHistoryDynamicRateType;
 import com.crrepa.ble.scan.bean.CRPScanDevice;
 import com.crrepa.ble.scan.callback.CRPScanCallback;
@@ -44,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeScreen extends AppCompatActivity {
     Context context;
