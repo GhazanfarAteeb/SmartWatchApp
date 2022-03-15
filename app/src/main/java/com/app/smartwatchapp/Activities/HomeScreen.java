@@ -15,8 +15,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,6 +38,8 @@ import com.crrepa.ble.conn.listener.CRPHeartRateChangeListener;
 import com.crrepa.ble.conn.type.CRPHistoryDynamicRateType;
 import com.crrepa.ble.scan.bean.CRPScanDevice;
 import com.crrepa.ble.scan.callback.CRPScanCallback;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +64,7 @@ public class HomeScreen extends AppCompatActivity {
     public TextView tvHeartRate, tvBloodOxygen, tvBloodPressure;
     ImageView ivUnlink;
     ProgressDialog progressDialog;
+    BottomNavigationView bottomNavigationView;
     public CRPHeartRateChangeListener heartRateChangeListener = new CRPHeartRateChangeListener() {
         @Override
         public void onMeasuring(int i) {
@@ -71,7 +76,7 @@ public class HomeScreen extends AppCompatActivity {
             tvHeartRate.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (i!= 0 ) {
+                    if (i != 0) {
                         tvHeartRate.setText(i + " BPM");
                         AdapterWatch.mBleConnection.startMeasureBloodOxygen();
                         progressDialog.setMessage("Getting Blood Oxygen Reading...");
@@ -123,16 +128,16 @@ public class HomeScreen extends AppCompatActivity {
         @Override
         public void onBloodOxygenChange(int i) {
             Log.d("BLOOD_OXYGEN : ", String.valueOf(i));
-                tvBloodOxygen.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (i != 0) {
-                            tvBloodOxygen.setText(i + " %");
-                            AdapterWatch.mBleConnection.startMeasureBloodPressure();
-                            progressDialog.setMessage("Getting Blood Pressure Reading...");
-                        }
+            tvBloodOxygen.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (i != 0) {
+                        tvBloodOxygen.setText(i + " %");
+                        AdapterWatch.mBleConnection.startMeasureBloodPressure();
+                        progressDialog.setMessage("Getting Blood Pressure Reading...");
                     }
-                });
+                }
+            });
         }
 
         @Override
@@ -148,7 +153,7 @@ public class HomeScreen extends AppCompatActivity {
             tvBloodPressure.post(new Runnable() {
                 @Override
                 public void run() {
-                    tvBloodPressure.setText(i+"/"+i1);
+                    tvBloodPressure.setText(i + "/" + i1);
                 }
             });
             progressDialog.dismiss();
@@ -162,6 +167,28 @@ public class HomeScreen extends AppCompatActivity {
         context = HomeScreen.this;
         adapterWatch = new AdapterWatch(context);
         initView();
+
+        bottomNavigationView = findViewById(R.id.navigation_bar);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+
+
+                    case R.id.home:
+                        break;
+
+                    case R.id.profile:
+                        Intent intent = new Intent(HomeScreen.this, profileActivity.class);
+                        startActivity(intent);
+                    case R.id.journey:
+                        Intent i = new Intent(HomeScreen.this, MapActivity.class);
+                        startActivity(i);
+                        return true;
+                }
+                return false;
+            }
+        });
         AdapterWatch.SendState sendState = new AdapterWatch.SendState() {
             @Override
             public void changeState(final int state, Watch watch) {
@@ -211,8 +238,7 @@ public class HomeScreen extends AppCompatActivity {
 
         if (!App.getBleClient(context).isBluetoothEnable()) {
             startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1);
-        }
-        else {
+        } else {
             startScan();
         }
     }
@@ -236,7 +262,7 @@ public class HomeScreen extends AppCompatActivity {
     }
 
     private void startScan() {
-        if (scanDeviceList.size()>0 && watchList.size() >0) {
+        if (scanDeviceList.size() > 0 && watchList.size() > 0) {
             scanDeviceList.clear();
             watchList.clear();
         }
@@ -259,7 +285,7 @@ public class HomeScreen extends AppCompatActivity {
                 }
             }, SCAN_PERIOD);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.getLocalizedMessage();
         }
     }
