@@ -1,4 +1,4 @@
 package com.app.smartwatchapp.Services;
 
-public class BackgroundServices {
+public class LocationServices {
 }
