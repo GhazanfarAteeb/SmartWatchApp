@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.smartwatchapp.Adapters.AdapterWatch;
-import com.app.smartwatchapp.App;
+import com.app.smartwatchapp.Application.App;
 import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.Models.WatchReadings;

@@ -1,8 +1,9 @@
-package com.app.smartwatchapp;
+package com.app.smartwatchapp.Application;
 
 import android.app.Application;
 import android.content.Context;
 
+import com.app.smartwatchapp.SharedPref.SharedPref;
 import com.crrepa.ble.CRPBleClient;
 
 public class App extends Application {
@@ -17,5 +18,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mBleClient = CRPBleClient.create(this);
+        SharedPref.init(this);
     }
 }
