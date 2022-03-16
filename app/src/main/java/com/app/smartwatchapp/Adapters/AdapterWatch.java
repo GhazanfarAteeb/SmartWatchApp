@@ -2,7 +2,6 @@ package com.app.smartwatchapp.Adapters;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.smartwatchapp.Activities.HomeScreen;
 import com.app.smartwatchapp.App;
-import com.app.smartwatchapp.Listeners.SmartWatchListeners;
+import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.R;
 import com.crrepa.ble.CRPBleClient;
-import com.crrepa.ble.conn.CRPBleConnection;
-import com.crrepa.ble.conn.CRPBleDevice;
 import com.crrepa.ble.conn.listener.CRPBleConnectionStateListener;
 
 import java.util.ArrayList;
@@ -28,8 +24,6 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
     List<Watch> watchList = new ArrayList<>();
     Context context;
     CRPBleClient mBleClient;
-    public static CRPBleDevice mBleDevice;
-    public static CRPBleConnection mBleConnection;
     ProgressDialog progressDialog;
     private int CONNECTION_STATE;
     public AdapterWatch(Context context) {
@@ -59,8 +53,8 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
             progressDialog.setMessage("Connecting to " + watch.getWatchName());
             progressDialog.setCancelable(false);
             mBleClient = App.getBleClient(context);
-            mBleDevice = mBleClient.getBleDevice(watch.getWatchMACAddress());
-            if (mBleDevice != null && !mBleDevice.isConnected()) {
+            AppConstants.mBleDevice = mBleClient.getBleDevice(watch.getWatchMACAddress());
+            if (AppConstants.mBleDevice != null && !AppConstants.mBleDevice.isConnected()) {
                 connect(watch);
             }
         });
@@ -88,8 +82,8 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
 
     public void connect(Watch watch) {
         progressDialog.show();
-        mBleConnection = mBleDevice.connect();
-        mBleConnection.setConnectionStateListener(new CRPBleConnectionStateListener() {
+        AppConstants.mBleConnection = AppConstants.mBleDevice.connect();
+        AppConstants.mBleConnection.setConnectionStateListener(new CRPBleConnectionStateListener() {
             @Override
             public void onConnectionStateChange(int newState) {
                 switch (newState) {

@@ -5,7 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".Activities.HomeScreen">
-
+	
 	<RelativeLayout
 		android:id="@+id/rl_top_view"
 		android:layout_width="match_parent"
@@ -13,23 +13,23 @@
 		android:background="@drawable/bg_semi_rounded_bottom_corners"
 		android:backgroundTint="@color/blue"
 		android:padding="20dp">
-
+		
 		<ImageView
-			android:layout_centerVertical="true"
 			android:id="@+id/iv_logout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
 			android:layout_alignParentEnd="true"
+			android:layout_centerVertical="true"
 			android:layout_marginTop="10dp"
 			android:layout_marginBottom="10dp"
 			android:src="@drawable/ic_logout" />
-
+		
 		<TextView
 			android:id="@+id/tv_welcome"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-
+			
 			android:layout_centerVertical="true"
 			android:fontFamily="@font/poppins_medium"
 			android:text="@string/welcome"
@@ -328,13 +328,5 @@
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navigation_bar"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:background="?android:attr/windowBackground"
-        app:menu="@menu/bottom_nav_bar_menu" />
+	
 </RelativeLayout>

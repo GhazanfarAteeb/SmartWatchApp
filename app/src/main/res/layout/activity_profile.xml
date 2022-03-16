@@ -117,14 +117,7 @@
             android:text="usamashaukat1234@gmail.com"
             android:textSize="16sp" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/navigation_bar"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:background="?android:attr/windowBackground"
-            app:menu="@menu/bottom_nav_bar_menu" />
+        
 
     </RelativeLayout>
 

@@ -1,6 +1,8 @@
 package com.app.smartwatchapp.Models;
 
-public class Watch {
+import java.io.Serializable;
+
+public class Watch implements Serializable {
     String watchName;
     String watchMACAddress;
 

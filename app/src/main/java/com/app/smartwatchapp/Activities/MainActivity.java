@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             else {
                 Toast.makeText(MainActivity.this, "no", Toast.LENGTH_SHORT).show();
             }
-            startActivity(new Intent(context, HomeScreen.class));
+            startActivity(new Intent(context, FragmentsMainActivity.class));
         });
     }
 
