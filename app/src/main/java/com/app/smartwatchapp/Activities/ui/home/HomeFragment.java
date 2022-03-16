@@ -28,13 +28,13 @@ import com.app.smartwatchapp.Adapters.AdapterWatch;
 import com.app.smartwatchapp.App;
 import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.Models.Watch;
+import com.app.smartwatchapp.Models.WatchReadings;
 import com.app.smartwatchapp.PermissionUtils.Permissions;
 import com.app.smartwatchapp.R;
 import com.app.smartwatchapp.databinding.FragmentHomeBinding;
 import com.crrepa.ble.conn.bean.CRPBloodOxygenInfo;
 import com.crrepa.ble.conn.bean.CRPHeartRateInfo;
 import com.crrepa.ble.conn.bean.CRPMovementHeartRateInfo;
-import com.crrepa.ble.conn.listener.CRPBleConnectionStateListener;
 import com.crrepa.ble.conn.listener.CRPBloodOxygenChangeListener;
 import com.crrepa.ble.conn.listener.CRPBloodPressureChangeListener;
 import com.crrepa.ble.conn.listener.CRPHeartRateChangeListener;
@@ -50,7 +50,6 @@ public class HomeFragment extends Fragment {
     View root;
     Context context;
     CardView cvWatch;
-    public static boolean scanDone = false;
     private final List<CRPScanDevice> scanDeviceList = new ArrayList<>();
     private final List<Watch> watchList = new ArrayList<>();
     RecyclerView rvWatchList;
@@ -66,7 +65,8 @@ public class HomeFragment extends Fragment {
     public TextView tvHeartRate, tvBloodOxygen, tvBloodPressure;
     ImageView ivUnlink;
     ProgressDialog progressDialog;
-    public static final String SCAN_DONE_TAG = "SCAN_DONE";
+
+
     public CRPHeartRateChangeListener heartRateChangeListener = new CRPHeartRateChangeListener() {
         @Override
         public void onMeasuring(int i) {
@@ -77,7 +77,8 @@ public class HomeFragment extends Fragment {
         public void onOnceMeasureComplete(int i) {
             tvHeartRate.post(() -> {
                 if (i != 0) {
-                    tvHeartRate.setText(i + " BPM");
+                    AppConstants.currentWatchReadings.setHeartRate(i);
+                    tvHeartRate.setText(AppConstants.currentWatchReadings.getHeartRate() + " BPM");
                     AppConstants.mBleConnection.startMeasureBloodOxygen();
                     progressDialog.setMessage("Getting Blood Oxygen Reading...");
                 }
@@ -111,7 +112,8 @@ public class HomeFragment extends Fragment {
             Log.d("BLOOD_OXYGEN : ", String.valueOf(i));
             tvBloodOxygen.post(() -> {
                 if (i != 0) {
-                    tvBloodOxygen.setText(i + " %");
+                    AppConstants.currentWatchReadings.setBloodOxygenLevel(i);
+                    tvBloodOxygen.setText( AppConstants.currentWatchReadings.getBloodOxygenLevel()+ " %");
                     AppConstants.mBleConnection.startMeasureBloodPressure();
                     progressDialog.setMessage("Getting Blood Pressure Reading...");
                 }
@@ -126,7 +128,11 @@ public class HomeFragment extends Fragment {
     public CRPBloodPressureChangeListener bloodPressureChangeListener = new CRPBloodPressureChangeListener() {
         @Override
         public void onBloodPressureChange(int i, int i1) {
-            tvBloodPressure.post(() -> tvBloodPressure.setText(i + "/" + i1));
+            if (i!=255 && i1 != 255) {
+                AppConstants.currentWatchReadings.setSystolicBloodPressure(i);
+                AppConstants.currentWatchReadings.setDiastolicBloodPressure(i1);
+                tvBloodPressure.post(() -> tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure() + "/" + AppConstants.currentWatchReadings.getDiastolicBloodPressure()));
+            }
             progressDialog.dismiss();
         }
     };
@@ -140,32 +146,27 @@ public class HomeFragment extends Fragment {
         adapterWatch = new AdapterWatch(context);
         initView();
 
-        scanDone = requireActivity().getIntent().getBooleanExtra(SCAN_DONE_TAG, true);
-        AdapterWatch.SendState sendState = (state, watch) -> {
+        AdapterWatch.SendState sendState = () -> {
             AppConstants.mBleConnection.setHeartRateChangeListener(heartRateChangeListener);
             AppConstants.mBleConnection.setBloodOxygenChangeListener(bloodOxygenChangeListener);
             AppConstants.mBleConnection.setBloodPressureChangeListener(bloodPressureChangeListener);
             requireActivity().runOnUiThread(() -> {
-                if (state == CRPBleConnectionStateListener.STATE_CONNECTED) {
+                if (AppConstants.mBleDevice.isConnected()) {
+                    setWatchData();
+                    AppConstants.currentWatchReadings = new WatchReadings();
+                    AppConstants.mBleConnection.startMeasureOnceHeartRate();
                     progressDialog.setMessage("Getting Heart Rate Reading...");
                     progressDialog.show();
-                    cvWatch.setVisibility(View.VISIBLE);
-                    rvWatchList.setVisibility(View.GONE);
-                    tvWatchName.setText(watch.getWatchName());
-                    tvWatchMACAddress.setText(watch.getWatchMACAddress());
-                    AppConstants.mBleConnection.startMeasureOnceHeartRate();
-
-                    ivUnlink.setOnClickListener(view -> {
-                        AppConstants.mBleDevice.disconnect();
-                        AppConstants.mBleConnection.close();
-                        cvWatch.setVisibility(View.GONE);
-                        rvWatchList.setVisibility(View.VISIBLE);
-                        startScan();
-                    });
                 }
             });
         };
         adapterWatch.setChangeStateCallback(sendState);
+        if (AppConstants.connectedWatch != null) {
+            setWatchData();
+            tvHeartRate.setText(AppConstants.currentWatchReadings.getHeartRate()+" BPM");
+            tvBloodOxygen.setText(AppConstants.currentWatchReadings.getBloodOxygenLevel()+" %");
+            tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure()+"/" +AppConstants.currentWatchReadings.getDiastolicBloodPressure());
+        }
         requestPermissions();
         rvWatchList.setLayoutManager(new LinearLayoutManager(context));
         return root;
@@ -179,6 +180,7 @@ public class HomeFragment extends Fragment {
 
 
     private void initView() {
+        ((TextView) root.findViewById(R.id.tv_welcome)).setText("Home");
         tvWatchName = root.findViewById(R.id.tv_watch_name);
         tvWatchMACAddress = root.findViewById(R.id.tv_watch_mac_address);
         rvWatchList = root.findViewById(R.id.rv_watch_connection);
@@ -193,7 +195,7 @@ public class HomeFragment extends Fragment {
         if (!App.getBleClient(context).isBluetoothEnable()) {
             startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1);
         } else {
-            if (!scanDone) {
+            if (AppConstants.connectedWatch == null) {
                 startScan();
             }
         }
@@ -222,6 +224,9 @@ public class HomeFragment extends Fragment {
             scanDeviceList.clear();
             watchList.clear();
         }
+        tvHeartRate.setText(getResources().getText(R.string.heart_rate));
+        tvBloodOxygen.setText(getResources().getText(R.string.blood_oxygen));
+        tvBloodPressure.setText(getResources().getText(R.string.blood_pressure));
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Scanning...");
         progressDialog.setCancelable(false);
@@ -277,5 +282,20 @@ public class HomeFragment extends Fragment {
         if (Activity.RESULT_OK == resultCode) {
             startScan();
         }
+    }
+
+    public void setWatchData() {
+        cvWatch.setVisibility(View.VISIBLE);
+        rvWatchList.setVisibility(View.GONE);
+        tvWatchName.setText(AppConstants.connectedWatch.getWatchName());
+        tvWatchMACAddress.setText(AppConstants.connectedWatch.getWatchMACAddress());
+        ivUnlink.setOnClickListener(view -> {
+            AppConstants.mBleDevice.disconnect();
+            AppConstants.mBleConnection.close();
+            cvWatch.setVisibility(View.GONE);
+            rvWatchList.setVisibility(View.VISIBLE);
+            AppConstants.connectedWatch = null;
+            startScan();
+        });
     }
 }

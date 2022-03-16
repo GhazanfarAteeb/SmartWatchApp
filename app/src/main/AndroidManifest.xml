@@ -32,9 +32,7 @@
 			 TODO: Before you run your application, you need a Google Maps API key.
 
 			 To get one, follow the directions here:
-
 				https://developers.google.com/maps/documentation/android-sdk/get-api-key
-
 			 Once you have your API key (it starts with "AIza"), define a new property in your
 			 project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
 			 "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
@@ -44,13 +42,9 @@
             android:value="YOUR_API_KEY" />
     
         <activity
-            android:name=".Activities.profileActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activities.MainActivity"
             android:exported="true">
             
-            <!-- TODO: PLACE INTENT LAUNCHER BACK HERE -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 

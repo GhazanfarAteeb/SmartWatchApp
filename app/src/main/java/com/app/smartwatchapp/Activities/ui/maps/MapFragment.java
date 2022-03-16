@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -109,6 +110,7 @@ public class MapFragment extends Fragment {
         binding = FragmentMapsBinding.inflate(inflater, container, false);
         root = binding.getRoot();
         context = getActivity();
+        ((TextView) root.findViewById(R.id.tv_welcome)).setText("Journey");
         return root;
     }
 

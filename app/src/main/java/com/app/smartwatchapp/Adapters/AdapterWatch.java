@@ -25,7 +25,6 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
     Context context;
     CRPBleClient mBleClient;
     ProgressDialog progressDialog;
-    private int CONNECTION_STATE;
     public AdapterWatch(Context context) {
         this.context = context;
     }
@@ -55,7 +54,8 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
             mBleClient = App.getBleClient(context);
             AppConstants.mBleDevice = mBleClient.getBleDevice(watch.getWatchMACAddress());
             if (AppConstants.mBleDevice != null && !AppConstants.mBleDevice.isConnected()) {
-                connect(watch);
+                connect();
+                AppConstants.connectedWatch = watch;
             }
         });
     }
@@ -80,7 +80,7 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void connect(Watch watch) {
+    public void connect() {
         progressDialog.show();
         AppConstants.mBleConnection = AppConstants.mBleDevice.connect();
         AppConstants.mBleConnection.setConnectionStateListener(new CRPBleConnectionStateListener() {
@@ -88,15 +88,12 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
             public void onConnectionStateChange(int newState) {
                 switch (newState) {
                     case CRPBleConnectionStateListener.STATE_CONNECTED:
-                        CONNECTION_STATE = CRPBleConnectionStateListener.STATE_CONNECTED;
                         progressDialog.dismiss();
-                        sendState.changeState(CONNECTION_STATE, watch);
+                        sendState.changeState();
                         break;
                     case CRPBleConnectionStateListener.STATE_CONNECTING:
-                        CONNECTION_STATE = CRPBleConnectionStateListener.STATE_CONNECTING;
                         break;
                     case CRPBleConnectionStateListener.STATE_DISCONNECTED:
-                        CONNECTION_STATE = CRPBleConnectionStateListener.STATE_DISCONNECTED;
                         progressDialog.dismiss();
                         break;
                 }
@@ -105,7 +102,7 @@ public class AdapterWatch extends RecyclerView.Adapter<AdapterWatch.ViewHolder> 
     }
 
     public interface SendState {
-        void changeState(int state, Watch watch);
+        void changeState();
     }
 
     public void setChangeStateCallback(SendState sendState) {

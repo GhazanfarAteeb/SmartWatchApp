@@ -6,37 +6,7 @@
 	android:layout_height="match_parent"
 	tools:context=".Activities.ui.home.HomeFragment">
 	
-	<RelativeLayout
-		android:id="@+id/rl_top_view"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@drawable/bg_semi_rounded_bottom_corners"
-		android:backgroundTint="@color/blue"
-		android:padding="20dp">
-		
-		<ImageView
-			android:id="@+id/iv_logout"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_alignParentEnd="true"
-			android:layout_centerVertical="true"
-			android:layout_marginTop="10dp"
-			android:layout_marginBottom="10dp"
-			android:src="@drawable/ic_logout" />
-		
-		<TextView
-			android:id="@+id/tv_welcome"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			
-			android:layout_centerVertical="true"
-			android:fontFamily="@font/poppins_medium"
-			android:text="@string/welcome"
-			android:textColor="@color/white"
-			android:textSize="30sp"
-			android:textStyle="bold" />
-	</RelativeLayout>
+	<include layout="@layout/layout_top_bar"/>
 	
 	<ScrollView
 		android:layout_width="match_parent"

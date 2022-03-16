@@ -11,6 +11,7 @@
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/ic_logout.xml" value="0.175" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/ic_maps_arrow.xml" value="0.175" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/ic_unlink.xml" value="0.175" />
+        <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/topbar_background.xml" value="0.175" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/activity_fragment_main.xml" value="0.28858486532706284" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/activity_fragments_main.xml" value="0.14322359982898675" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/activity_home_screen.xml" value="0.25" />
@@ -23,6 +24,8 @@
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/fragment_home.xml" value="0.14322359982898675" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/fragment_maps.xml" value="0.28858486532706284" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/fragment_notifications.xml" value="0.28858486532706284" />
+        <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/fragment_profile.xml" value="0.28858486532706284" />
+        <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/layout_top_bar.xml" value="0.28858486532706284" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/list_item_watch.xml" value="0.28858486532706284" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/menu/bottom_nav_bar_menu.xml" value="0.28174235403151066" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.28858486532706284" />
