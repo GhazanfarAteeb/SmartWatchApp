@@ -29,6 +29,11 @@
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/list_item_watch.xml" value="0.28858486532706284" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/menu/bottom_nav_bar_menu.xml" value="0.28174235403151066" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.28858486532706284" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_heart.xml" value="0.131" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_speed.xml" value="0.131" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/layout/activity_main.xml" value="0.1835897435897436" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/layout/fragment_home.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/layout/fragment_maps.xml" value="0.18645833333333334" />
       </map>
     </option>
   </component>

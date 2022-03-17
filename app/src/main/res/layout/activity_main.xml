@@ -98,21 +98,22 @@
 					android:layout_marginStart="5dp"
 					android:hint="Phone No." />
 			</LinearLayout>
+
 			<EditText
 				android:id="@+id/et_password"
-				android:fontFamily="@font/poppins_medium"
-				android:inputType="textPassword"
-				android:hint="Password"
-				android:textSize="16sp"
-				android:paddingBottom="10dp"
-				android:paddingTop="10dp"
-				android:paddingStart="15dp"
-				android:paddingEnd="10dp"
-				android:layout_marginTop="25dp"
-				android:layout_below="@id/ll_phone_no"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/bg_rounded_corners"/>
+				android:layout_below="@id/ll_phone_no"
+				android:layout_marginTop="25dp"
+				android:background="@drawable/bg_rounded_corners"
+				android:fontFamily="@font/poppins_medium"
+				android:hint="Password"
+				android:inputType="textPassword"
+				android:paddingStart="15dp"
+				android:paddingTop="10dp"
+				android:paddingEnd="10dp"
+				android:paddingBottom="10dp"
+				android:textSize="16sp" />
 			<Button
 				android:id="@+id/btn_login"
 				android:textColor="@color/white"
