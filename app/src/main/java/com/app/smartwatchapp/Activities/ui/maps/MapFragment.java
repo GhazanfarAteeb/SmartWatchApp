@@ -39,6 +39,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Date;
+
 public class MapFragment extends Fragment {
     private static final String TAG = "LocationActivity";
     private static final long INTERVAL = 200;
@@ -76,6 +78,7 @@ public class MapFragment extends Fragment {
                         Log.d("CURRENT_ALTITUDE : ", String.valueOf(location.getAltitude()));
                         Log.d("CURRENT_ACCURACY : ", String.valueOf(location.getAccuracy()));
                         Log.d(null, "==============================================");
+//                        Date date = new Date(location.getTime());
             mMap.addMarker(markerOptions);
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 20.f));

@@ -364,8 +364,7 @@
                 <LinearLayout
                     android:id="@+id/ll_rates_view_3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ll_rates_view_1">
+                    android:layout_height="wrap_content">
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cv_altitude"
@@ -471,13 +470,8 @@
                                 android:textStyle="bold" />
                         </RelativeLayout>
                     </androidx.cardview.widget.CardView>
-
-
-
                 </LinearLayout>
             </LinearLayout>
-
         </ScrollView>
-
     </RelativeLayout>
 </RelativeLayout>
