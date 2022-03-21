@@ -26,6 +26,8 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+
     </androidx.cardview.widget.CardView>
     <!--	<androidx.cardview.widget.CardView-->
     <!--		android:layout_alignParentBottom="true"-->
@@ -108,9 +110,17 @@
     <!--	</androidx.cardview.widget.CardView>-->
 
     <RelativeLayout
+        android:id="@+id/rl_search"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/cv_maps">
+
+
+    </RelativeLayout>
+    <RelativeLayout
         android:id="@+id/rl_readings"
         android:layout_width="match_parent"
-        android:layout_below="@id/cv_maps"
+        android:layout_below="@id/rl_search"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp">
@@ -121,7 +131,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_medium"
             android:padding="10dp"
-            android:layout_alignParentTop="true"
             android:text="@string/live_insights"
             android:textColor="@color/black"
             android:textSize="22sp"
