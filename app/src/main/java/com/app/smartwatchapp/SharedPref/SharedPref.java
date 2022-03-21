@@ -18,8 +18,20 @@ public class SharedPref {
             mSharedPref = context.getSharedPreferences(context.getPackageName(), Activity.MODE_PRIVATE);
     }
 
-    public static String read(String key, String defValue) {
+    public static String readString(String key, String defValue) {
         return mSharedPref.getString(key, defValue);
+    }
+
+    public static boolean readBoolean(String key, boolean defValue) {
+        return  mSharedPref.getBoolean(key, defValue);
+    }
+
+    public static int readInteger(String key, int defValue) {
+        return  mSharedPref.getInt(key, defValue);
+    }
+
+    public static float readFloat(String key, float defValue) {
+        return  mSharedPref.getFloat(key, defValue);
     }
 
     public static void writeString(String key, String value) {
