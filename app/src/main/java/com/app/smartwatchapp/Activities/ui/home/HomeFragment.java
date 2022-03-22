@@ -1,6 +1,7 @@
 package com.app.smartwatchapp.Activities.ui.home;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -332,7 +333,10 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        startScan();
+        getActivity();
+        if (resultCode == Activity.RESULT_OK) {
+            startScan();
+        }
 
     }
 
