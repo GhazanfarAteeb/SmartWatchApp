@@ -24,7 +24,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.R;
 import com.app.smartwatchapp.databinding.FragmentMapsBinding;
 import com.google.android.gms.common.ConnectionResult;
@@ -236,25 +235,11 @@ public class MapFragment extends Fragment {
         ivJourneyStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (!AppConstants.IS_JOURNEY_STARTED) {
-//
-//                    ivJourneyStart.setVisibility(View.GONE);
                 tvTimer.setVisibility(View.VISIBLE);
                 ivJourneyStop.setVisibility(View.VISIBLE);
                 ivJourneyStart.setVisibility(View.GONE);
-//                    AppConstants.IS_JOURNEY_STARTED = true;
                 StartTime = SystemClock.uptimeMillis();
                 handler.postDelayed(runnable, 0);
-//                    RelativeLayout.LayoutParams layoutParamsImageView = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    layoutParamsImageView.setMargins(0, 0, 270, 0);
-//                    ivJourneyStart.setLayoutParams(layoutParamsImageView);
-
-//                }
-//                else {
-//                    ivJourneyStart.setImageResource(R.drawable.ic_start);
-//                    AppConstants.IS_JOURNEY_STARTED = false;
-//                    handler.removeCallbacks(runnable);
-//                }
             }
         });
         ivJourneyStop.setOnClickListener(new View.OnClickListener() {
@@ -266,8 +251,6 @@ public class MapFragment extends Fragment {
                 handler.removeCallbacks(runnable);
             }
         });
-
-
     }
 
 
@@ -279,33 +262,23 @@ public class MapFragment extends Fragment {
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
-
         return bitmap;
     }
 
     public Runnable runnable = new Runnable() {
-
         public void run() {
-
             MillisecondTime = SystemClock.uptimeMillis() - StartTime;
-
             UpdateTime = TimeBuff + MillisecondTime;
-
             Seconds = (int) (UpdateTime / 1000);
-
             Minutes = Seconds / 60;
-
             Seconds = Seconds % 60;
-
             Milliseconds = (int) (UpdateTime % 1000);
-
             tvTimer.setText(
                     convertDate(Hours) + ":"
                             + convertDate(Minutes) + ":"
                             + String.format("%02d", Seconds) + ":"
                             + String.format("%03d", Milliseconds)
             );
-
             handler.postDelayed(this, 0);
         }
 
