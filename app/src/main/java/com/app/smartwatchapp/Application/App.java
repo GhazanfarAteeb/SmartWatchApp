@@ -6,12 +6,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
+import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.SharedPref.SharedPref;
 import com.crrepa.ble.CRPBleClient;
 
 public class App extends Application {
     private CRPBleClient mBleClient;
-    public static final String CHANNEL_ID = "serviceChannel";
     public static NotificationManager manager;
     public static CRPBleClient getBleClient(Context context) {
         App application = (App) context.getApplicationContext();
@@ -29,7 +29,7 @@ public class App extends Application {
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
+                    AppConstants.CHANNEL_ID,
                     "Notification service",
                     NotificationManager.IMPORTANCE_DEFAULT
             );

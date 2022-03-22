@@ -248,7 +248,6 @@ public class HomeFragment extends Fragment {
             boolean success = App.getBleClient(context).scanDevice(new CRPScanCallback() {
                 @Override
                 public void onScanning(CRPScanDevice crpScanDevice) {
-//                    System.out.println(crpScanDevice.getDevice().getName());
                     requireActivity().runOnUiThread(() -> addScanResults(crpScanDevice));
                 }
 
@@ -332,7 +331,6 @@ public class HomeFragment extends Fragment {
                 break;
             case AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION:
                 if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
-//                    Toast.makeText(requireActivity(), "Background Permission Granted", Toast.LENGTH_SHORT).show();
                     LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
                     try {
                         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
