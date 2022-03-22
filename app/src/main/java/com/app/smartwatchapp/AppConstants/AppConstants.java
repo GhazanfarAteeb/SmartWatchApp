@@ -24,5 +24,5 @@ public class AppConstants {
     public static final String[] PERMISSION_UPDATE_BAND_CONFIG = new String[]{
             "android.permission.ACCESS_FINE_LOCATION"
     };
-    
+
 }
