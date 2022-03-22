@@ -6,7 +6,9 @@
 	android:elevation="5dp"
 	app:cardBackgroundColor="#eeeeee"
 	app:cardCornerRadius="16dp"
-	app:cardUseCompatPadding="true">
+	app:cardUseCompatPadding="true"
+	android:clickable="true"
+	android:focusable="true">
 	
 	<RelativeLayout
 		android:layout_width="match_parent"

@@ -7,18 +7,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -58,7 +53,6 @@ public class MapFragment extends Fragment {
     private GoogleMap mMap;
     Context context;
     SupportMapFragment mapFragment;
-    TextView textViewTimer;
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -69,23 +63,22 @@ public class MapFragment extends Fragment {
 
     private final LocationListener locationListener = new LocationListener() {
         @Override
-
         public void onLocationChanged(@NonNull Location location) {
             mMap.clear();
             Log.d(TAG, "Firing onLocationChanged..............................................");
             LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions()
-                    .position(loc)
-                    .icon(
-                            BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(context, R.drawable.ic_maps_arrow
-                            ))
-                    );
+                                .position(loc)
+                                .icon(
+                                        BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(context, R.drawable.ic_maps_arrow
+                                        ))
+                                );
             Log.d(null, "================ USER DETAILS ================");
-            Log.d("CURRENT_LOCATION : ", location.getLatitude() + "," + location.getLongitude());
-            Log.d("CURRENT_SPEED : ", String.valueOf(location.getSpeed()));
-            Log.d("CURRENT_ALTITUDE : ", String.valueOf(location.getAltitude()));
-            Log.d("CURRENT_ACCURACY : ", String.valueOf(location.getAccuracy()));
-            Log.d(null, "==============================================");
+                        Log.d("CURRENT_LOCATION : ", location.getLatitude() + "," + location.getLongitude());
+                        Log.d("CURRENT_SPEED : ", String.valueOf(location.getSpeed()));
+                        Log.d("CURRENT_ALTITUDE : ", String.valueOf(location.getAltitude()));
+                        Log.d("CURRENT_ACCURACY : ", String.valueOf(location.getAccuracy()));
+                        Log.d(null, "==============================================");
 //                        Date date = new Date(location.getTime());
             mMap.addMarker(markerOptions);
 
@@ -129,7 +122,6 @@ public class MapFragment extends Fragment {
 
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 //        private LocationRequest locationRequest;
-
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -188,7 +180,6 @@ public class MapFragment extends Fragment {
 //            }
         }
     };
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -213,12 +204,7 @@ public class MapFragment extends Fragment {
         binding = null;
     }
 
-    long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L;
-    Handler handler;
-    int Hours, Seconds, Minutes, Milliseconds;
-
     @Override
-
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (ConnectionResult.SUCCESS == GooglePlayServicesUtil.isGooglePlayServicesAvailable(context)) {
@@ -229,76 +215,23 @@ public class MapFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        TextView textViewTimer = (TextView) view.findViewById(R.id.tv_timer);
+        ImageView imageViewStartStop = view.findViewById(R.id.iv_start_stop);
 
 
-        textViewTimer = view.findViewById(R.id.tv_timer);
-        ImageView imageViewStart = view.findViewById(R.id.iv_start);
-        ImageView imageViewStop = view.findViewById(R.id.iv_stop);
-
-        handler = new Handler();
-
-        imageViewStart.setOnClickListener(new View.OnClickListener() {
+        imageViewStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!AppConstants.IS_JOURNEY_STARTED) {
-
-                    imageViewStart.setVisibility(View.GONE);
-                    textViewTimer.setVisibility(View.VISIBLE);
-                    imageViewStop.setVisibility(View.VISIBLE);
-
-//                    AppConstants.IS_JOURNEY_STARTED = true;
-                    StartTime = SystemClock.uptimeMillis();
-                    handler.postDelayed(runnable, 0);
-//                    RelativeLayout.LayoutParams layoutParamsImageView = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    layoutParamsImageView.setMargins(0, 0, 270, 0);
-//                    imageViewStart.setLayoutParams(layoutParamsImageView);
-
+                    imageViewStartStop.setImageResource(R.drawable.ic_stop);
+                    AppConstants.IS_JOURNEY_STARTED = true;
+                } else {
+                    imageViewStartStop.setImageResource(R.drawable.ic_start);
+                    AppConstants.IS_JOURNEY_STARTED = false;
                 }
-//                else {
-//                    imageViewStart.setImageResource(R.drawable.ic_start);
-//                    AppConstants.IS_JOURNEY_STARTED = false;
-//                    handler.removeCallbacks(runnable);
-//                }
             }
         });
-        imageViewStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageViewStop.setVisibility(View.GONE);
-                imageViewStart.setVisibility(View.VISIBLE);
-                handler.removeCallbacks(runnable);
-            }
-        });
-        Runnable runnable = new Runnable() {
-
-            public void run() {
-
-                MillisecondTime = SystemClock.uptimeMillis() - StartTime;
-
-                UpdateTime = TimeBuff + MillisecondTime;
-
-                Seconds = (int) (UpdateTime / 1000);
-
-                Hours = Minutes / 60;
-
-                Minutes = Seconds / 60;
-
-                Seconds = Seconds % 60;
-
-                Milliseconds = (int) (UpdateTime % 1000);
-
-                textViewTimer.setText(Hours + ":" + Minutes + ":"
-                        + String.format("%02d", Seconds) + ":"
-                        + String.format("%03d", Milliseconds));
-
-                handler.postDelayed(this, 0);
-            }
-
-        };
-
-
     }
-
 
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
@@ -311,30 +244,4 @@ public class MapFragment extends Fragment {
 
         return bitmap;
     }
-
-    public Runnable runnable = new Runnable() {
-
-        public void run() {
-
-            MillisecondTime = SystemClock.uptimeMillis() - StartTime;
-
-            UpdateTime = TimeBuff + MillisecondTime;
-
-            Seconds = (int) (UpdateTime / 1000);
-
-            Minutes = Seconds / 60;
-
-            Seconds = Seconds % 60;
-
-            Milliseconds = (int) (UpdateTime % 1000);
-
-            textViewTimer.setText(Hours + ":" + Minutes + ":"
-                    + String.format("%02d", Seconds) + ":"
-                    + String.format("%03d", Milliseconds));
-
-            handler.postDelayed(this, 0);
-        }
-
-    };
-
 }
