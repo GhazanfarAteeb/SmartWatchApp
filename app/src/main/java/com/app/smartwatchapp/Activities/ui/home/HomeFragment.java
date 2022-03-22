@@ -1,15 +1,15 @@
 package com.app.smartwatchapp.Activities.ui.home;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -141,12 +141,9 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         root = binding.getRoot();
-        context = getActivity();
+        context = requireActivity();
         adapterWatch = new AdapterWatch(context);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
-        }
+
         initView();
 
         AdapterWatch.SendState sendState = () -> {
@@ -171,12 +168,26 @@ public class HomeFragment extends Fragment {
             tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure() + "/" + AppConstants.currentWatchReadings.getDiastolicBloodPressure());
         }
         if (!App.getBleClient(context).isBluetoothEnable()) {
-            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1);
+            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), AppConstants.BLUETOOTH_REQUEST_CODE);
         } else {
-            if (AppConstants.connectedWatch == null) {
-                startScan();
+            if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
+            } else {
+                LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                try {
+                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                } catch (Exception ex) {
+                    ex.getLocalizedMessage();
+                }
+                if (AppConstants.connectedWatch == null) {
+                    startScan();
+                }
             }
         }
+
         rvWatchList.setLayoutManager(new LinearLayoutManager(context));
         return root;
     }
@@ -205,6 +216,17 @@ public class HomeFragment extends Fragment {
 
     void addScanResults(CRPScanDevice crpScanDevice) {
         Watch watch = new Watch();
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
         watch.setWatchName(crpScanDevice.getDevice().getName());
         watch.setWatchMACAddress(crpScanDevice.getDevice().getAddress());
         for (int i = 0; i < scanDeviceList.size(); i++) {
@@ -237,12 +259,13 @@ public class HomeFragment extends Fragment {
             boolean success = App.getBleClient(context).scanDevice(new CRPScanCallback() {
                 @Override
                 public void onScanning(CRPScanDevice crpScanDevice) {
-                    getActivity().runOnUiThread(() -> addScanResults(crpScanDevice));
+                    requireActivity().runOnUiThread(() -> addScanResults(crpScanDevice));
                 }
 
                 @Override
                 public void onScanComplete(List<CRPScanDevice> list) {
                     progressDialog.dismiss();
+                    System.out.println(watchList);
                     adapterWatch.setData(watchList);
                     rvWatchList.setAdapter(adapterWatch);
                 }
@@ -253,89 +276,35 @@ public class HomeFragment extends Fragment {
         }
     }
 
-//    void requestPermissions() {
-//        Log.d("HOME_FRAGMENT", "IN Request permissions");
-//        if (!Permissions.hasSelfPermissions(context, AppConstants.PERMISSION_UPDATE_BAND_CONFIG)) {
-//            ActivityCompat.requestPermissions(requireActivity(), AppConstants.PERMISSION_UPDATE_BAND_CONFIG, AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
-//        }
-//        if (this.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-//                                Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-//                        AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
-//
-//            } else {
-//                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                builder.setTitle("Functionality limited");
-//                builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.");
-//                builder.setPositiveButton(android.R.string.ok, null);
-//                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//
-//                    @Override
-//                    public void onDismiss(DialogInterface dialog) {
-//                    }
-//
-//                });
-//                builder.show();
-//            }
-//        }
-//        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-//
-//        try {
-//            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//                context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-//            }
-//        } catch (Exception ex) {
-//            ex.getLocalizedMessage();
-//        }
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        Log.d("HOME_FRAGMEnt", "In permission fine location");
-//        switch (requestCode) {
-//            case AppConstants.PERMISSION_REQUEST_FINE_LOCATION:
-//                if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Permissions.hasSelfPermissions(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                            builder.setTitle("Functionality limited");
-//                            builder.setMessage("Please go to Settings -> Applications -> Permissions and set to Allow all time");
-//                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                    getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION);
-//
-//                                }
-//                            });
-//                            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//
-//                                @Override
-//                                public void onDismiss(DialogInterface dialog) {
-//                                }
-//
-//                            });
-//                            builder.show();
-//                        }
-//                    }
-//                }
-//                break;
-//            case AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION:
-//                if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
-//                    Toast.makeText(getActivity(), "Background Permission Granted", Toast.LENGTH_SHORT).show();
-//                }
-//                break;
-//        }
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        getActivity().recreate();
-//    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getActivity();
-        if (resultCode == Activity.RESULT_OK) {
-            startScan();
+        switch (requestCode) {
+            case AppConstants.BLUETOOTH_REQUEST_CODE:
+                if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
+                }
+                else {
+                    LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                    try {
+                        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                            startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), AppConstants.LOCATION_REQUEST_CODE);
+                        }
+                        else {
+                            if (AppConstants.mBleDevice == null) {
+                                startScan();
+                            }
+                        }
+                    } catch (Exception ex) {
+                        ex.getLocalizedMessage();
+                    }
+                }
+            break;
+            case AppConstants.LOCATION_REQUEST_CODE:
+                if (AppConstants.connectedWatch == null) {
+                    startScan();
+                }
         }
 
     }
@@ -361,22 +330,11 @@ public class HomeFragment extends Fragment {
             case AppConstants.PERMISSION_REQUEST_FINE_LOCATION:
                 if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
                         builder.setTitle("Functionality limited");
-                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.");
-                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION);
-
-                            }
-                        });
-                        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                            }
-
+                        builder.setMessage("Since background location access has not been granted, please select allow all time.");
+                        builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION));
+                        builder.setOnDismissListener(dialog -> {
                         });
                         builder.show();
                     }
@@ -384,8 +342,16 @@ public class HomeFragment extends Fragment {
                 break;
             case AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION:
                 if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
-//                    Toast.makeText(getActivity(), "Background Permission Granted", Toast.LENGTH_SHORT).show();
-                    getActivity().recreate();
+//                    Toast.makeText(requireActivity(), "Background Permission Granted", Toast.LENGTH_SHORT).show();
+                    LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                    try {
+                        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                            context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                    } catch (Exception ex) {
+                        ex.getLocalizedMessage();
+                    }
+                    requireActivity().recreate();
                 }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

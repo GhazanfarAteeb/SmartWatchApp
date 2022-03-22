@@ -1,9 +1,7 @@
 package com.app.smartwatchapp.Activities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -12,7 +10,6 @@ import androidx.navigation.ui.NavigationUI;
 import com.app.smartwatchapp.R;
 import com.app.smartwatchapp.databinding.ActivityFragmentsMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class FragmentsMainActivity extends AppCompatActivity {
 

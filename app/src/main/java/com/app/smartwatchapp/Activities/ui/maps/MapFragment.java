@@ -1,14 +1,11 @@
 package com.app.smartwatchapp.Activities.ui.maps;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,22 +15,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.R;
 import com.app.smartwatchapp.databinding.FragmentMapsBinding;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,7 +36,6 @@ public class MapFragment extends Fragment {
     private static final long INTERVAL = 200;
     private static final long FASTEST_INTERVAL = 100;
     LocationRequest mLocationRequest;
-    GoogleApiClient mGoogleApiClient;
     private FragmentMapsBinding binding;
     View root;
     private GoogleMap mMap;
@@ -86,40 +74,6 @@ public class MapFragment extends Fragment {
         }
     };
 
-    private final GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
-        @Override
-        public void onConnected(@Nullable Bundle bundle) {
-            Log.d(TAG, "onConnected - isConnected ...............: " + mGoogleApiClient.isConnected());
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            PendingResult<Status> pendingResult = LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, locationListener, Looper.getMainLooper()
-            );
-            Log.d(TAG, "Location update started ..............: ");
-        }
-
-        @Override
-        public void onConnectionSuspended(int i) {
-
-        }
-    };
-
-    private final GoogleApiClient.OnConnectionFailedListener connectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
-        @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Log.d(TAG, "Connection failed: " + connectionResult.toString());
-        }
-    };
-
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 //        private LocationRequest locationRequest;
         /**
@@ -132,7 +86,7 @@ public class MapFragment extends Fragment {
          * user has installed Google Play services and returned to the app.
          */
         @Override
-        public void onMapReady(GoogleMap googleMap) {
+        public void onMapReady(@NonNull GoogleMap googleMap) {
             mMap = googleMap;
             mMap.getUiSettings().setAllGesturesEnabled(false);
             //TODO - UNCOMMENT LINES
@@ -187,14 +141,8 @@ public class MapFragment extends Fragment {
         binding = FragmentMapsBinding.inflate(inflater, container, false);
         root = binding.getRoot();
         context = getActivity();
-        ((TextView) root.findViewById(R.id.tv_welcome)).setText("Journey");
+        ((TextView) root.findViewById(R.id.tv_welcome)).setText(getString(R.string.title_dashboard));
         createLocationRequest();
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(connectionCallbacks)
-                .addOnConnectionFailedListener(connectionFailedListener)
-                .build();
-        mGoogleApiClient.connect();
         return root;
     }
 
@@ -207,10 +155,6 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (ConnectionResult.SUCCESS == GooglePlayServicesUtil.isGooglePlayServicesAvailable(context)) {
-
-
-        }
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
@@ -219,16 +163,13 @@ public class MapFragment extends Fragment {
         ImageView imageViewStartStop = view.findViewById(R.id.iv_start_stop);
 
 
-        imageViewStartStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!AppConstants.IS_JOURNEY_STARTED) {
-                    imageViewStartStop.setImageResource(R.drawable.ic_stop);
-                    AppConstants.IS_JOURNEY_STARTED = true;
-                } else {
-                    imageViewStartStop.setImageResource(R.drawable.ic_start);
-                    AppConstants.IS_JOURNEY_STARTED = false;
-                }
+        imageViewStartStop.setOnClickListener(v -> {
+            if (!AppConstants.IS_JOURNEY_STARTED) {
+                imageViewStartStop.setImageResource(R.drawable.ic_stop);
+                AppConstants.IS_JOURNEY_STARTED = true;
+            } else {
+                imageViewStartStop.setImageResource(R.drawable.ic_start);
+                AppConstants.IS_JOURNEY_STARTED = false;
             }
         });
     }

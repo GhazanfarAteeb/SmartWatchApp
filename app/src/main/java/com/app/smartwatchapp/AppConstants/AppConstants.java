@@ -21,8 +21,6 @@ public class AppConstants {
     public static boolean IS_JOURNEY_STARTED = false;
     public static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
     public static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
-    public static final String[] PERMISSION_UPDATE_BAND_CONFIG = new String[]{
-            "android.permission.ACCESS_FINE_LOCATION"
-    };
-    
+    public static final int BLUETOOTH_REQUEST_CODE = 1;
+    public static final int LOCATION_REQUEST_CODE = 2;
 }
