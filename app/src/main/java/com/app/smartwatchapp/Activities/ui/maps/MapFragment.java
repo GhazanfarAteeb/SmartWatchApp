@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -134,10 +135,11 @@ public class MapFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
             mMap.getUiSettings().setAllGesturesEnabled(false);
-            if (AppConstants.mBleDevice == null) {
-                NavHostFragment.findNavController(MapFragment.this).navigate(R.id.action_navigation_dashboard_to_navigation_home);
-
-            }
+            //TODO - UNCOMMENT LINES
+//            if (AppConstants.mBleDevice == null) {
+//                NavHostFragment.findNavController(MapFragment.this).navigate(R.id.action_navigation_dashboard_to_navigation_home);
+//            }
+            //TODO - UNCOMMENT ABOVE LINES
 //            locationRequest = LocationRequest.create();
 //            locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
 //            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -207,11 +209,28 @@ public class MapFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         if (ConnectionResult.SUCCESS == GooglePlayServicesUtil.isGooglePlayServicesAvailable(context)) {
 
+
         }
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        TextView textViewTimer = (TextView) view.findViewById(R.id.tv_timer);
+        ImageView imageViewStartStop = view.findViewById(R.id.iv_start_stop);
+
+
+        imageViewStartStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!AppConstants.IS_JOURNEY_STARTED) {
+                    imageViewStartStop.setImageResource(R.drawable.ic_stop);
+                    AppConstants.IS_JOURNEY_STARTED = true;
+                } else {
+                    imageViewStartStop.setImageResource(R.drawable.ic_start);
+                    AppConstants.IS_JOURNEY_STARTED = false;
+                }
+            }
+        });
     }
 
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {

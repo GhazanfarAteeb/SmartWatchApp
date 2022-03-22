@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.ui.maps.MapFragment">
-
     <include layout="@layout/layout_top_bar" />
 
     <androidx.cardview.widget.CardView
@@ -110,20 +109,39 @@
     <!--	</androidx.cardview.widget.CardView>-->
 
     <RelativeLayout
-        android:id="@+id/rl_search"
+        android:id="@+id/rl_journey"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/cv_maps">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cv_maps"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
 
+        <ImageView
+            android:id="@+id/iv_start_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:padding="5dp"
+            android:src="@drawable/ic_start" />
+
+        <TextView
+            android:id="@+id/tv_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="00:00:000"
+            android:textSize="35sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/rl_readings"
         android:layout_width="match_parent"
-        android:layout_below="@id/rl_search"
+        android:layout_below="@id/rl_journey"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="10dp">
+        android:padding="9dp">
 
         <TextView
             android:id="@+id/tv_insights"
@@ -399,14 +417,15 @@
                                     android:id="@+id/iv_altitude"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_thermometer" />
+                                    android:src="@drawable/ic_altitude" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/poppins_medium"
-                                    android:text="@string/str_blood_pressure"
+                                    android:text="@string/altitude"
+                                    android:layout_marginLeft="10dp"
                                     android:textColor="@color/black"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
@@ -450,7 +469,7 @@
                                     android:id="@+id/iv_accuracy"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_speed" />
+                                    android:src="@drawable/ic_accuracy" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -458,7 +477,7 @@
                                     android:layout_gravity="center"
                                     android:layout_marginStart="13dp"
                                     android:fontFamily="@font/poppins_medium"
-                                    android:text="@string/speed"
+                                    android:text="@string/accuracy"
                                     android:textColor="@color/black"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />

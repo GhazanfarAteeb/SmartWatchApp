@@ -6,7 +6,6 @@
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/bg_rounded_corners.xml" value="0.1095" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/bg_semi_rounded_bottom_corners.xml" value="0.175" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/bg_semi_rounded_corners.xml" value="0.175" />
-        <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/ic_group_5.xml" value="0.175" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/ic_heart.xml" value="0.175" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.175" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/drawable/ic_logout.xml" value="0.175" />
@@ -32,8 +31,13 @@
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/layout/list_item_watch.xml" value="0.28858486532706284" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/menu/bottom_nav_bar_menu.xml" value="0.28174235403151066" />
         <entry key="..\:/BitLogicx/SmartWatchApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.28858486532706284" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_accuracy.xml" value="0.142" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_altitude.xml" value="0.142" />
         <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_heart.xml" value="0.131" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_journey.xml" value="0.142" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_maps_arrow.xml" value="0.142" />
         <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_speed.xml" value="0.131" />
+        <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/drawable/ic_start.xml" value="0.142" />
         <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/layout/activity_main.xml" value="0.1835897435897436" />
         <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/layout/activity_notification_expanded.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/usama/AndroidStudioProjects/SmartWatchApp/app/src/main/res/layout/fragment_home.xml" value="0.18645833333333334" />

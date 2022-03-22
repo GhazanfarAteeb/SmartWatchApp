@@ -25,4 +25,7 @@
 	<string name="title_notifications">Profile</string>
 	<string name="live_insights">Live Insights</string>
 	<string name="speed">Speed</string>
+    <string name="accuracy">Accuracy</string>
+	<string name="altitude">Altitude</string>
+    <string name="_00_00_00">00:00:00</string>
 </resources>
