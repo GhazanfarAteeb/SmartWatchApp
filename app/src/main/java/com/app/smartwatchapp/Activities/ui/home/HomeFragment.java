@@ -216,17 +216,6 @@ public class HomeFragment extends Fragment {
 
     void addScanResults(CRPScanDevice crpScanDevice) {
         Watch watch = new Watch();
-        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-            return;
-        }
         watch.setWatchName(crpScanDevice.getDevice().getName());
         watch.setWatchMACAddress(crpScanDevice.getDevice().getAddress());
         for (int i = 0; i < scanDeviceList.size(); i++) {
@@ -259,6 +248,7 @@ public class HomeFragment extends Fragment {
             boolean success = App.getBleClient(context).scanDevice(new CRPScanCallback() {
                 @Override
                 public void onScanning(CRPScanDevice crpScanDevice) {
+//                    System.out.println(crpScanDevice.getDevice().getName());
                     requireActivity().runOnUiThread(() -> addScanResults(crpScanDevice));
                 }
 
