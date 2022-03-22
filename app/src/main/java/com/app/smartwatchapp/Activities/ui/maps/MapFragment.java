@@ -20,7 +20,10 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.R;
 import com.app.smartwatchapp.databinding.FragmentMapsBinding;
 import com.google.android.gms.common.ConnectionResult;
@@ -134,6 +137,10 @@ public class MapFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
             mMap.getUiSettings().setAllGesturesEnabled(false);
+            if (AppConstants.mBleDevice == null) {
+                NavHostFragment.findNavController(MapFragment.this).navigate(R.id.action_navigation_dashboard_to_navigation_home);
+
+            }
 //            locationRequest = LocationRequest.create();
 //            locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
 //            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);

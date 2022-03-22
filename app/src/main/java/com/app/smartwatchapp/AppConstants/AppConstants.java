@@ -6,6 +6,7 @@ import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.Models.WatchReadings;
 import com.crrepa.ble.conn.CRPBleConnection;
 import com.crrepa.ble.conn.CRPBleDevice;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import java.util.List;
 
@@ -16,4 +17,11 @@ public class AppConstants {
     public static Watch connectedWatch;
     public static WatchReadings currentWatchReadings;
     public static List<Location> locationList;
+    public static FusedLocationProviderClient client;
+    public static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
+    public static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
+    public static final String[] PERMISSION_UPDATE_BAND_CONFIG = new String[]{
+            "android.permission.ACCESS_FINE_LOCATION"
+    };
+
 }

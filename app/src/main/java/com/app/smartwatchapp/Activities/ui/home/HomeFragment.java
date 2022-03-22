@@ -1,19 +1,21 @@
 package com.app.smartwatchapp.Activities.ui.home;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,12 +26,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.smartwatchapp.Activities.MainActivity;
 import com.app.smartwatchapp.Adapters.AdapterWatch;
-import com.app.smartwatchapp.Application.App;
 import com.app.smartwatchapp.AppConstants.AppConstants;
+import com.app.smartwatchapp.Application.App;
 import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.Models.WatchReadings;
-import com.app.smartwatchapp.PermissionUtils.Permissions;
 import com.app.smartwatchapp.R;
 import com.app.smartwatchapp.databinding.FragmentHomeBinding;
 import com.crrepa.ble.conn.bean.CRPBloodOxygenInfo;
@@ -57,10 +59,7 @@ public class HomeFragment extends Fragment {
     AdapterWatch adapterWatch;
     public static final Comparator<CRPScanDevice> SORTING_COMPARATOR = Comparator.comparing(crpScanDevice -> crpScanDevice.getDevice().getAddress());
 
-    private static final int REQUEST_UPDATE_BAND_CONFIG = 4;
-    private static final String[] PERMISSION_UPDATE_BAND_CONFIG = new String[]{
-            "android.permission.ACCESS_FINE_LOCATION"
-    };
+
     TextView tvWatchName, tvWatchMACAddress;
     public TextView tvHeartRate, tvBloodOxygen, tvBloodPressure;
     ImageView ivUnlink;
@@ -113,7 +112,7 @@ public class HomeFragment extends Fragment {
             tvBloodOxygen.post(() -> {
                 if (i != 0) {
                     AppConstants.currentWatchReadings.setBloodOxygenLevel(i);
-                    tvBloodOxygen.setText( AppConstants.currentWatchReadings.getBloodOxygenLevel()+ " %");
+                    tvBloodOxygen.setText(AppConstants.currentWatchReadings.getBloodOxygenLevel() + " %");
                     AppConstants.mBleConnection.startMeasureBloodPressure();
                     progressDialog.setMessage("Getting Blood Pressure Reading...");
                 }
@@ -128,7 +127,7 @@ public class HomeFragment extends Fragment {
     public CRPBloodPressureChangeListener bloodPressureChangeListener = new CRPBloodPressureChangeListener() {
         @Override
         public void onBloodPressureChange(int i, int i1) {
-            if (i!=255 && i1 != 255) {
+            if (i != 255 && i1 != 255) {
                 AppConstants.currentWatchReadings.setSystolicBloodPressure(i);
                 AppConstants.currentWatchReadings.setDiastolicBloodPressure(i1);
                 tvBloodPressure.post(() -> tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure() + "/" + AppConstants.currentWatchReadings.getDiastolicBloodPressure()));
@@ -138,12 +137,17 @@ public class HomeFragment extends Fragment {
     };
     private FragmentHomeBinding binding;
 
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         root = binding.getRoot();
         context = getActivity();
         adapterWatch = new AdapterWatch(context);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
+        }
         initView();
 
         AdapterWatch.SendState sendState = () -> {
@@ -163,11 +167,17 @@ public class HomeFragment extends Fragment {
         adapterWatch.setChangeStateCallback(sendState);
         if (AppConstants.connectedWatch != null) {
             setWatchData();
-            tvHeartRate.setText(AppConstants.currentWatchReadings.getHeartRate()+" BPM");
-            tvBloodOxygen.setText(AppConstants.currentWatchReadings.getBloodOxygenLevel()+" %");
-            tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure()+"/" +AppConstants.currentWatchReadings.getDiastolicBloodPressure());
+            tvHeartRate.setText(AppConstants.currentWatchReadings.getHeartRate() + " BPM");
+            tvBloodOxygen.setText(AppConstants.currentWatchReadings.getBloodOxygenLevel() + " %");
+            tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure() + "/" + AppConstants.currentWatchReadings.getDiastolicBloodPressure());
         }
-        requestPermissions();
+        if (!App.getBleClient(context).isBluetoothEnable()) {
+            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1);
+        } else {
+            if (AppConstants.connectedWatch == null) {
+                startScan();
+            }
+        }
         rvWatchList.setLayoutManager(new LinearLayoutManager(context));
         return root;
     }
@@ -192,13 +202,6 @@ public class HomeFragment extends Fragment {
         tvBloodOxygen = root.findViewById(R.id.tv_blood_oxygen);
         tvBloodPressure = root.findViewById(R.id.tv_blood_pressure);
 
-        if (!App.getBleClient(context).isBluetoothEnable()) {
-            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1);
-        } else {
-            if (AppConstants.connectedWatch == null) {
-                startScan();
-            }
-        }
     }
 
     void addScanResults(CRPScanDevice crpScanDevice) {
@@ -251,37 +254,88 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    void requestPermissions() {
-        if (!Permissions.hasSelfPermissions(context, PERMISSION_UPDATE_BAND_CONFIG)) {
-            ActivityCompat.requestPermissions(
-                    requireActivity(), PERMISSION_UPDATE_BAND_CONFIG, REQUEST_UPDATE_BAND_CONFIG);
+//    void requestPermissions() {
+//        Log.d("HOME_FRAGMENT", "IN Request permissions");
+//        if (!Permissions.hasSelfPermissions(context, AppConstants.PERMISSION_UPDATE_BAND_CONFIG)) {
+//            ActivityCompat.requestPermissions(requireActivity(), AppConstants.PERMISSION_UPDATE_BAND_CONFIG, AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
+//        }
+//        if (this.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+//                                Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+//                        AppConstants.PERMISSION_REQUEST_FINE_LOCATION);
+//
+//            } else {
+//                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setTitle("Functionality limited");
+//                builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons.  Please go to Settings -> Applications -> Permissions and grant location access to this app.");
+//                builder.setPositiveButton(android.R.string.ok, null);
+//                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                    }
+//
+//                });
+//                builder.show();
+//            }
+//        }
+//        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+//
+//        try {
+//            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+//                context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+//            }
+//        } catch (Exception ex) {
+//            ex.getLocalizedMessage();
+//        }
+//    }
 
-        }
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-        try {
-            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        } catch (Exception ex) {
-            ex.getLocalizedMessage();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        getActivity().recreate();
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        Log.d("HOME_FRAGMEnt", "In permission fine location");
+//        switch (requestCode) {
+//            case AppConstants.PERMISSION_REQUEST_FINE_LOCATION:
+//                if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Permissions.hasSelfPermissions(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                            builder.setTitle("Functionality limited");
+//                            builder.setMessage("Please go to Settings -> Applications -> Permissions and set to Allow all time");
+//                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION);
+//
+//                                }
+//                            });
+//                            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//
+//                                @Override
+//                                public void onDismiss(DialogInterface dialog) {
+//                                }
+//
+//                            });
+//                            builder.show();
+//                        }
+//                    }
+//                }
+//                break;
+//            case AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION:
+//                if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
+//                    Toast.makeText(getActivity(), "Background Permission Granted", Toast.LENGTH_SHORT).show();
+//                }
+//                break;
+//        }
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        getActivity().recreate();
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getActivity();
-        if (Activity.RESULT_OK == resultCode) {
-            startScan();
-        }
+        startScan();
+
     }
 
     public void setWatchData() {
@@ -297,5 +351,41 @@ public class HomeFragment extends Fragment {
             AppConstants.connectedWatch = null;
             startScan();
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case AppConstants.PERMISSION_REQUEST_FINE_LOCATION:
+                if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Functionality limited");
+                        builder.setMessage("Since background location access has not been granted, this app will not be able to discover beacons in the background.  Please go to Settings -> Applications -> Permissions and grant background location access to this app.");
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION);
+
+                            }
+                        });
+                        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                            }
+
+                        });
+                        builder.show();
+                    }
+                }
+                break;
+            case AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION:
+                if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
+//                    Toast.makeText(getActivity(), "Background Permission Granted", Toast.LENGTH_SHORT).show();
+
+                }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
