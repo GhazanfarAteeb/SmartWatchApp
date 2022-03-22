@@ -383,7 +383,7 @@ public class HomeFragment extends Fragment {
             case AppConstants.PERMISSION_REQUEST_BACKGROUND_LOCATION:
                 if (grantResults.length > 0 && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
 //                    Toast.makeText(getActivity(), "Background Permission Granted", Toast.LENGTH_SHORT).show();
-
+                    getActivity().recreate();
                 }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
