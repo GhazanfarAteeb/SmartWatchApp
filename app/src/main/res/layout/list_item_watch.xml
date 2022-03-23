@@ -3,12 +3,12 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
+	android:clickable="true"
 	android:elevation="5dp"
+	android:focusable="true"
 	app:cardBackgroundColor="#eeeeee"
 	app:cardCornerRadius="16dp"
-	app:cardUseCompatPadding="true"
-	android:clickable="true"
-	android:focusable="true">
+	app:cardUseCompatPadding="true">
 	
 	<RelativeLayout
 		android:layout_width="match_parent"

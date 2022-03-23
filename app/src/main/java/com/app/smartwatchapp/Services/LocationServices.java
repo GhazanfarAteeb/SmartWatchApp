@@ -22,6 +22,7 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -48,7 +49,6 @@ public class LocationServices extends Service {
     private NotificationCompat.Builder builder;
     private NotificationManager mNotificationManager;
     private PowerManager.WakeLock wakeLock;                 // PARTIAL_WAKELOCK
-    private static final String TAG = "LocationActivity";
 
     public static void createLocationRequest() {
         AppConstants.mLocationRequest = new LocationRequest();
@@ -81,6 +81,7 @@ public class LocationServices extends Service {
         return START_NOT_STICKY;
     }
 
+    @SuppressLint("BatteryLife")
     @Override
     public void onCreate() {
         Log.d("SERVICE", "Service");
@@ -96,8 +97,8 @@ public class LocationServices extends Service {
         else {
             intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
             intent.setData(Uri.parse("package:" + packageName));
+            getApplicationContext().startActivity(intent);
         }
-        getApplicationContext().startActivity(intent);
     }
 
 
@@ -138,9 +139,10 @@ public class LocationServices extends Service {
     }
 
     //Location Callback
-    private LocationCallback locationCallback = new LocationCallback() {
+    private final LocationCallback locationCallback = new LocationCallback() {
+        @SuppressLint({"DefaultLocale", "SetTextI18n"})
         @Override
-        public void onLocationResult(LocationResult locationResult) {
+        public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
             MapFragment.mMap.clear();
             Location currentLocation = locationResult.getLastLocation();
@@ -163,7 +165,7 @@ public class LocationServices extends Service {
             Log.d("CURRENT_ALTITUDE : ", String.valueOf(currentLocation.getAltitude()));
             Log.d("CURRENT_ACCURACY : ", String.valueOf(currentLocation.getAccuracy()));
             Log.d(null, "==============================================");
-            MapFragment.tvAltitude.setText(String.format("%.2f",currentLocation.getAltitude()));;
+            MapFragment.tvAltitude.setText(String.format("%.2f",currentLocation.getAltitude()));
             MapFragment.tvSpeed.setText(String.format("%.2f", (currentLocation.getSpeed()*3.6)) +" KM/H");
             MapFragment.tvAccuracy.setText(String.format("%.2f", (currentLocation.getAccuracy())));
             MapFragment.mMap.addMarker(markerOptions);
