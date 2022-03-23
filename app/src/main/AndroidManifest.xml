@@ -52,6 +52,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".Services.LocationServices"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location">
+            <intent-filter>
+                <action android:name="com.app.smartwatchapp.GPSService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

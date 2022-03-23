@@ -1,5 +1,6 @@
 package com.app.smartwatchapp.AppConstants;
 
+import android.app.Notification;
 import android.location.Location;
 
 import com.app.smartwatchapp.Models.Watch;
@@ -7,6 +8,7 @@ import com.app.smartwatchapp.Models.WatchReadings;
 import com.crrepa.ble.conn.CRPBleConnection;
 import com.crrepa.ble.conn.CRPBleDevice;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 
 import java.util.List;
 
@@ -24,4 +26,10 @@ public class AppConstants {
     public static final int BLUETOOTH_REQUEST_CODE = 1;
     public static final int LOCATION_REQUEST_CODE = 2;
     public static final String CHANNEL_ID = "serviceChannel";
+
+
+    public static final long INTERVAL = 0;
+    public static final long FASTEST_INTERVAL = 0;
+    public static LocationRequest mLocationRequest;
+    public static Notification notification;
 }

@@ -9,6 +9,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Binder;
@@ -18,17 +22,25 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.app.smartwatchapp.Activities.MainActivity;
+import com.app.smartwatchapp.Activities.ui.maps.MapFragment;
 import com.app.smartwatchapp.AppConstants.AppConstants;
 import com.app.smartwatchapp.R;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocationServices extends Service {
     private static final int ID = 1;                        // The id of the notification
@@ -37,43 +49,13 @@ public class LocationServices extends Service {
     private NotificationManager mNotificationManager;
     private PowerManager.WakeLock wakeLock;                 // PARTIAL_WAKELOCK
     private static final String TAG = "LocationActivity";
-    private static final long INTERVAL = 0;
-    private static final long FASTEST_INTERVAL = 0;
-    LocationRequest mLocationRequest;
-    Notification notification;
 
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    public static void createLocationRequest() {
+        AppConstants.mLocationRequest = new LocationRequest();
+        AppConstants.mLocationRequest.setInterval(AppConstants.INTERVAL);
+        AppConstants.mLocationRequest.setFastestInterval(AppConstants.FASTEST_INTERVAL);
+        AppConstants.mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
-
-    private final LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
-//            mMap.clear();
-//            Log.d(TAG, "Firing onLocationChanged..............................................");
-//            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-//            MarkerOptions markerOptions = new MarkerOptions()
-//                    .position(loc)
-//                    .icon(
-//                            BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(context, R.drawable.ic_maps_arrow
-//                            ))
-//                    );
-
-            Log.d(null, "================ USER DETAILS ================");
-            Log.d("CURRENT_LOCATION : ", location.getLatitude() + "," + location.getLongitude());
-            Log.d("CURRENT_SPEED : ", String.valueOf(location.getSpeed()));
-            Log.d("CURRENT_ALTITUDE : ", String.valueOf(location.getAltitude()));
-            Log.d("CURRENT_ACCURACY : ", String.valueOf(location.getAccuracy()));
-            Log.d(null, "==============================================");
-//                        Date date = new Date(location.getTime());
-//            mMap.addMarker(markerOptions);
-//
-//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 20.f));
-        }
-    };
 
     /**
      * Returns the instance of the service
@@ -86,24 +68,22 @@ public class LocationServices extends Service {
 
     private final IBinder mBinder = new LocalBinder();      // IBinder
 
-
-    public static void setContext(Context context) {
-
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         AppConstants.client = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(getApplicationContext());
         createLocationRequest();
         startLocationUpdates();
-        notification = getNotification();
-        startForeground(ID, notification);
+        AppConstants.notification = getNotification();
+        startForeground(ID, AppConstants.notification);
+        Log.d("SERVICE", "ON START COMMAND");
+
         return START_NOT_STICKY;
     }
 
     @Override
     public void onCreate() {
+        Log.d("SERVICE", "Service");
         super.onCreate();
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getResources().getString(R.string.app_name) + ":wakelock");
@@ -162,18 +142,28 @@ public class LocationServices extends Service {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
+            MapFragment.mMap.clear();
             Location currentLocation = locationResult.getLastLocation();
-            Log.d("Location", currentLocation.toString());
-//            Log.d(null, "================ USER DETAILS ================");
-//            Log.d("CURRENT_LOCATION : ", currentLocation.getLatitude() + "," + currentLocation.getLongitude());
-//            Log.d("CURRENT_SPEED : ", String.valueOf(currentLocation.getSpeed()));
-//            Log.d("CURRENT_ALTITUDE : ", String.valueOf(currentLocation.getAltitude()));
-//            Log.d("CURRENT_ACCURACY : ", String.valueOf(currentLocation.getAccuracy()));
-//            Log.d(null, "==============================================");
-            //Share/Publish Location
+            AppConstants.locationList.add(currentLocation);
+            List<LatLng> latLngArrayList = new ArrayList<>();
+            for (Location loc : AppConstants.locationList) {
+                latLngArrayList.add(new LatLng(loc.getLatitude(), loc.getLongitude()));
+            }
+            MapFragment.mMap.addPolyline(new PolylineOptions().addAll(latLngArrayList).width(5).color(Color.BLUE).geodesic(true));
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                    .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_maps_arrow)));
+            Log.d(null, "================ USER DETAILS ================");
+            Log.d("CURRENT_LOCATION : ", currentLocation.getLatitude() + "," + currentLocation.getLongitude());
+            Log.d("CURRENT_SPEED : ", String.valueOf(currentLocation.getSpeed()));
+            Log.d("CURRENT_ALTITUDE : ", String.valueOf(currentLocation.getAltitude()));
+            Log.d("CURRENT_ACCURACY : ", String.valueOf(currentLocation.getAccuracy()));
+            Log.d(null, "==============================================");
+            MapFragment.mMap.addMarker(markerOptions);
+            MapFragment.mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 17.f));
             builder.setContentText(currentLocation.getLatitude() + "," + currentLocation.getLongitude());
-            notification = builder.build();
-            startForeground(ID, notification);
+            AppConstants.notification = builder.build();
+            startForeground(ID, AppConstants.notification);
         }
     };
 
@@ -189,7 +179,7 @@ public class LocationServices extends Service {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        AppConstants.client.requestLocationUpdates(this.mLocationRequest,
+        AppConstants.client.requestLocationUpdates(AppConstants.mLocationRequest,
                 this.locationCallback, Looper.getMainLooper());
     }
 
@@ -209,5 +199,14 @@ public class LocationServices extends Service {
         super.onTaskRemoved(rootIntent);
     }
 
-
+    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        assert drawable != null;
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
 }
