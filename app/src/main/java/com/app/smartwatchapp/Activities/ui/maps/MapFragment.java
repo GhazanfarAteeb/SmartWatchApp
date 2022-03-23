@@ -38,11 +38,9 @@ public class MapFragment extends Fragment {
     SupportMapFragment mapFragment;
     TextView tvTimer;
     Intent serviceIntent;
-
+    public static TextView tvSpeed, tvAltitude, tvAccuracy, tvBloodPressure, tvHeartRate, tvBloodOxygenLevel;
 
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
-//        private LocationRequest locationRequest;
-
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -94,6 +92,9 @@ public class MapFragment extends Fragment {
 
 
         tvTimer = view.findViewById(R.id.tv_timer);
+        tvAccuracy = view.findViewById(R.id.tv_accuracy);
+        tvSpeed = view.findViewById(R.id.tv_speed);
+        tvAltitude = view.findViewById(R.id.tv_altitude);
         ImageView ivJourneyStart = view.findViewById(R.id.iv_start);
         ImageView ivJourneyStop = view.findViewById(R.id.iv_stop);
 

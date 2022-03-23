@@ -144,7 +144,11 @@ public class LocationServices extends Service {
             super.onLocationResult(locationResult);
             MapFragment.mMap.clear();
             Location currentLocation = locationResult.getLastLocation();
-            AppConstants.locationList.add(currentLocation);
+            float speedInKMPH = (float) (currentLocation.getSpeed()*3.6);
+            Log.d("CURRENT_SPEED", String.valueOf(speedInKMPH));
+            if (Math.round(speedInKMPH) != 0) {
+                AppConstants.locationList.add(currentLocation);
+            }
             List<LatLng> latLngArrayList = new ArrayList<>();
             for (Location loc : AppConstants.locationList) {
                 latLngArrayList.add(new LatLng(loc.getLatitude(), loc.getLongitude()));
@@ -159,6 +163,9 @@ public class LocationServices extends Service {
             Log.d("CURRENT_ALTITUDE : ", String.valueOf(currentLocation.getAltitude()));
             Log.d("CURRENT_ACCURACY : ", String.valueOf(currentLocation.getAccuracy()));
             Log.d(null, "==============================================");
+            MapFragment.tvAltitude.setText(String.format("%.2f",currentLocation.getAltitude()));;
+            MapFragment.tvSpeed.setText(String.format("%.2f", (currentLocation.getSpeed()*3.6)) +" KM/H");
+            MapFragment.tvAccuracy.setText(String.format("%.2f", (currentLocation.getAccuracy())));
             MapFragment.mMap.addMarker(markerOptions);
             MapFragment.mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 17.f));
             builder.setContentText(currentLocation.getLatitude() + "," + currentLocation.getLongitude());

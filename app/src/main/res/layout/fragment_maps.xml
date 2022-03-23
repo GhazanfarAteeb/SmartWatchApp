@@ -331,7 +331,7 @@
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
-
+    
                             <TextView
                                 android:id="@+id/tv_blood_pressure"
                                 android:layout_width="wrap_content"
@@ -359,19 +359,19 @@
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
-
+    
                             <LinearLayout
                                 android:id="@+id/ll_speed"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:padding="10dp">
-
+        
                                 <ImageView
                                     android:id="@+id/iv_speed"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/ic_speed" />
-
+        
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -383,17 +383,18 @@
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
-
+    
                             <TextView
                                 android:id="@+id/tv_speed"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_centerHorizontal="true"
                                 android:layout_below="@id/ll_speed"
-                                android:layout_centerVertical="true"
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="center"
-                                android:text="-- KP/H"
+                                android:text="@string/dashes"
                                 android:textColor="@color/black"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -440,21 +441,23 @@
                                     android:layout_gravity="center"
                                     android:fontFamily="@font/poppins_medium"
                                     android:text="@string/altitude"
-                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginStart="10dp"
                                     android:textColor="@color/black"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
-
+    
                             <TextView
                                 android:id="@+id/tv_altitude"
-                                android:layout_width="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/ll_altitude"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/poppins_medium"
-                                android:text="@string/blood_pressure"
+                                android:gravity="center"
+                                android:text="@string/dashes"
                                 android:textColor="@color/black"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -473,20 +476,21 @@
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
-
+    
                             <LinearLayout
                                 android:id="@+id/ll_accuracy"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:padding="10dp">
-
+        
                                 <ImageView
                                     android:id="@+id/iv_accuracy"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/ic_accuracy" />
-
+        
                                 <TextView
+                                    android:layout_alignParentBottom="true"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
@@ -497,7 +501,7 @@
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
-
+    
                             <TextView
                                 android:id="@+id/tv_accuracy"
                                 android:layout_width="match_parent"
@@ -507,7 +511,7 @@
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/poppins_medium"
                                 android:gravity="center"
-                                android:text="-- KP/H"
+                                android:text="@string/dashes"
                                 android:textColor="@color/black"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />

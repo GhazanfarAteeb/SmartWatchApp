@@ -7,6 +7,13 @@ import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.Models.WatchReadings;
 import com.crrepa.ble.conn.CRPBleConnection;
 import com.crrepa.ble.conn.CRPBleDevice;
+import com.crrepa.ble.conn.bean.CRPBloodOxygenInfo;
+import com.crrepa.ble.conn.bean.CRPHeartRateInfo;
+import com.crrepa.ble.conn.bean.CRPMovementHeartRateInfo;
+import com.crrepa.ble.conn.listener.CRPBloodOxygenChangeListener;
+import com.crrepa.ble.conn.listener.CRPBloodPressureChangeListener;
+import com.crrepa.ble.conn.listener.CRPHeartRateChangeListener;
+import com.crrepa.ble.conn.type.CRPHistoryDynamicRateType;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 
@@ -32,4 +39,57 @@ public class AppConstants {
     public static final long FASTEST_INTERVAL = 0;
     public static LocationRequest mLocationRequest;
     public static Notification notification;
+
+    //WATCH LISTENERS FOR CONTINUOUS READINGS
+
+    public static final CRPBloodPressureChangeListener bloodPressureChangeListener = new CRPBloodPressureChangeListener() {
+        @Override
+        public void onBloodPressureChange(int i, int i1) {
+
+        }
+    };
+
+    public static final CRPBloodOxygenChangeListener bloodOxygenChangeListener = new CRPBloodOxygenChangeListener() {
+        @Override
+        public void onTimingMeasure(int i) {
+
+        }
+
+        @Override
+        public void onBloodOxygenChange(int i) {
+
+        }
+
+        @Override
+        public void onTimingMeasureResult(CRPBloodOxygenInfo crpBloodOxygenInfo) {
+
+        }
+    };
+
+    public static final CRPHeartRateChangeListener heartRateChangeListener = new CRPHeartRateChangeListener() {
+        @Override
+        public void onMeasuring(int i) {
+
+        }
+
+        @Override
+        public void onOnceMeasureComplete(int i) {
+
+        }
+
+        @Override
+        public void onMeasureComplete(CRPHistoryDynamicRateType crpHistoryDynamicRateType, CRPHeartRateInfo crpHeartRateInfo) {
+
+        }
+
+        @Override
+        public void on24HourMeasureResult(CRPHeartRateInfo crpHeartRateInfo) {
+
+        }
+
+        @Override
+        public void onMovementMeasureResult(List<CRPMovementHeartRateInfo> list) {
+
+        }
+    };
 }
