@@ -148,29 +148,61 @@ public class LocationServices extends Service {
             Location currentLocation = locationResult.getLastLocation();
             float speedInKMPH = (float) (currentLocation.getSpeed()*3.6);
             Log.d("CURRENT_SPEED", String.valueOf(speedInKMPH));
-            if (Math.round(speedInKMPH) != 0) {
-                AppConstants.locationList.add(currentLocation);
-            }
+
             List<LatLng> latLngArrayList = new ArrayList<>();
             for (Location loc : AppConstants.locationList) {
                 latLngArrayList.add(new LatLng(loc.getLatitude(), loc.getLongitude()));
             }
-            MapFragment.mMap.addPolyline(new PolylineOptions().addAll(latLngArrayList).width(5).color(Color.BLUE).geodesic(true));
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_maps_arrow)));
+
+            if (Math.round(speedInKMPH) != 0) {
+                AppConstants.locationList.add(currentLocation);
+            }
+            MapFragment.mMap.addPolyline(new PolylineOptions().addAll(latLngArrayList).width(5).color(Color.BLUE).geodesic(true));
+
             Log.d(null, "================ USER DETAILS ================");
             Log.d("CURRENT_LOCATION : ", currentLocation.getLatitude() + "," + currentLocation.getLongitude());
             Log.d("CURRENT_SPEED : ", String.valueOf(currentLocation.getSpeed()));
             Log.d("CURRENT_ALTITUDE : ", String.valueOf(currentLocation.getAltitude()));
             Log.d("CURRENT_ACCURACY : ", String.valueOf(currentLocation.getAccuracy()));
             Log.d(null, "==============================================");
+
+
             MapFragment.tvAltitude.setText(String.format("%.2f",currentLocation.getAltitude()));
             MapFragment.tvSpeed.setText(String.format("%.2f", (currentLocation.getSpeed()*3.6)) +" KM/H");
             MapFragment.tvAccuracy.setText(String.format("%.2f", (currentLocation.getAccuracy())));
             MapFragment.mMap.addMarker(markerOptions);
             MapFragment.mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 17.f));
             builder.setContentText(currentLocation.getLatitude() + "," + currentLocation.getLongitude());
+
+            AppConstants.mBleConnection.setHeartRateChangeListener(AppConstants.heartRateChangeListener);
+            AppConstants.mBleConnection.setBloodOxygenChangeListener(AppConstants.bloodOxygenChangeListener);
+            AppConstants.mBleConnection.setBloodPressureChangeListener(AppConstants.bloodPressureChangeListener);
+            if (AppConstants.mBleDevice != null) {
+                if (!AppConstants.HEART_RATE_MEASUREMENT_COMPLETED &&
+                        !AppConstants.BLOOD_PRESSURE_MEASUREMENT_COMPLETED &&
+                        !AppConstants.BLOOD_OXYGEN_MEASUREMENT_COMPLETED) {
+                    AppConstants.mBleConnection.startMeasureOnceHeartRate();
+                }
+                else if (AppConstants.HEART_RATE_MEASUREMENT_COMPLETED &&
+                        AppConstants.BLOOD_PRESSURE_MEASUREMENT_COMPLETED &&
+                        AppConstants.BLOOD_OXYGEN_MEASUREMENT_COMPLETED) {
+
+                    AppConstants.BLOOD_OXYGEN_MEASUREMENT_COMPLETED = false;
+                    AppConstants.HEART_RATE_MEASUREMENT_COMPLETED = false;
+                    AppConstants.BLOOD_PRESSURE_MEASUREMENT_COMPLETED = false;
+                }
+            }
+
+            if (AppConstants.currentWatchReadings!=null) {
+                AppConstants.watchReadingsList.add(AppConstants.currentWatchReadings);
+                MapFragment.tvHeartRate.setText(AppConstants.currentWatchReadings.getHeartRate() + " BPM");
+                MapFragment.tvBloodOxygenLevel.setText(AppConstants.currentWatchReadings.getBloodOxygenLevel() + " %");
+                MapFragment.tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure() + "/" + AppConstants.currentWatchReadings.getDiastolicBloodPressure());
+            }
+
             AppConstants.notification = builder.build();
             startForeground(ID, AppConstants.notification);
         }

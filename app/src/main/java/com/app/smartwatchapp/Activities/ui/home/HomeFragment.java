@@ -1,6 +1,7 @@
 package com.app.smartwatchapp.Activities.ui.home;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@SuppressLint("SetTextI18n")
 public class HomeFragment extends Fragment {
     View root;
     Context context;
@@ -245,7 +247,7 @@ public class HomeFragment extends Fragment {
         progressDialog.setCancelable(false);
         progressDialog.show();
         try {
-            boolean success = App.getBleClient(context).scanDevice(new CRPScanCallback() {
+            App.getBleClient(context).scanDevice(new CRPScanCallback() {
                 @Override
                 public void onScanning(CRPScanDevice crpScanDevice) {
                     requireActivity().runOnUiThread(() -> addScanResults(crpScanDevice));

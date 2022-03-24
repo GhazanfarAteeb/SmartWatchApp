@@ -2,6 +2,7 @@ package com.app.smartwatchapp.AppConstants;
 
 import android.app.Notification;
 import android.location.Location;
+import android.util.Log;
 
 import com.app.smartwatchapp.Models.Watch;
 import com.app.smartwatchapp.Models.WatchReadings;
@@ -26,6 +27,8 @@ public class AppConstants {
     public static Watch connectedWatch;
     public static WatchReadings currentWatchReadings;
     public static List<Location> locationList;
+    public static List<WatchReadings> watchReadingsList;
+
     public static FusedLocationProviderClient client;
     public static boolean IS_JOURNEY_STARTED = false;
     public static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
@@ -39,33 +42,11 @@ public class AppConstants {
     public static final long FASTEST_INTERVAL = 0;
     public static LocationRequest mLocationRequest;
     public static Notification notification;
+    public static boolean HEART_RATE_MEASUREMENT_COMPLETED = false;
+    public static boolean BLOOD_OXYGEN_MEASUREMENT_COMPLETED = false;
+    public static boolean BLOOD_PRESSURE_MEASUREMENT_COMPLETED = false;
 
     //WATCH LISTENERS FOR CONTINUOUS READINGS
-
-    public static final CRPBloodPressureChangeListener bloodPressureChangeListener = new CRPBloodPressureChangeListener() {
-        @Override
-        public void onBloodPressureChange(int i, int i1) {
-
-        }
-    };
-
-    public static final CRPBloodOxygenChangeListener bloodOxygenChangeListener = new CRPBloodOxygenChangeListener() {
-        @Override
-        public void onTimingMeasure(int i) {
-
-        }
-
-        @Override
-        public void onBloodOxygenChange(int i) {
-
-        }
-
-        @Override
-        public void onTimingMeasureResult(CRPBloodOxygenInfo crpBloodOxygenInfo) {
-
-        }
-    };
-
     public static final CRPHeartRateChangeListener heartRateChangeListener = new CRPHeartRateChangeListener() {
         @Override
         public void onMeasuring(int i) {
@@ -74,7 +55,12 @@ public class AppConstants {
 
         @Override
         public void onOnceMeasureComplete(int i) {
-
+            if (i!=0) {
+                currentWatchReadings.setHeartRate(i);
+                Log.d("CONTINUOUS_HEART_RATE_READING", i + " BPM");
+            }
+            HEART_RATE_MEASUREMENT_COMPLETED = true;
+            mBleConnection.startMeasureBloodOxygen();
         }
 
         @Override
@@ -90,6 +76,41 @@ public class AppConstants {
         @Override
         public void onMovementMeasureResult(List<CRPMovementHeartRateInfo> list) {
 
+        }
+    };
+
+    public static final CRPBloodOxygenChangeListener bloodOxygenChangeListener = new CRPBloodOxygenChangeListener() {
+        @Override
+        public void onTimingMeasure(int i) {
+
+        }
+
+        @Override
+        public void onBloodOxygenChange(int i) {
+            if (i!=0) {
+                currentWatchReadings.setBloodOxygenLevel(i);
+                Log.d("CONTINUOUS_BLOOD_OXYGEN", i+"%");
+            }
+            BLOOD_OXYGEN_MEASUREMENT_COMPLETED = true;
+            mBleConnection.startMeasureBloodPressure();
+        }
+
+        @Override
+        public void onTimingMeasureResult(CRPBloodOxygenInfo crpBloodOxygenInfo) {
+
+        }
+    };
+
+    public static final CRPBloodPressureChangeListener bloodPressureChangeListener = new CRPBloodPressureChangeListener() {
+        @Override
+        public void onBloodPressureChange(int i, int i1) {
+            if (i!=255 && i1!=255) {
+                currentWatchReadings.setSystolicBloodPressure(i);
+                currentWatchReadings.setDiastolicBloodPressure(i1);
+                Log.d("CONTINUOUS_BLOOD_PRESSURE", i+"/"+i1);
+
+            }
+            BLOOD_PRESSURE_MEASUREMENT_COMPLETED = true;
         }
     };
 }

@@ -39,6 +39,43 @@ public class MapFragment extends Fragment {
     TextView tvTimer;
     Intent serviceIntent;
     public static TextView tvSpeed, tvAltitude, tvAccuracy, tvBloodPressure, tvHeartRate, tvBloodOxygenLevel;
+    long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L;
+    Handler handler;
+    int Hours, Seconds, Minutes, Milliseconds;
+    public Runnable runnable = new Runnable() {
+        public void run() {
+            MillisecondTime = SystemClock.uptimeMillis() - StartTime;
+            UpdateTime = TimeBuff + MillisecondTime;
+            Seconds = (int) (UpdateTime / 1000);
+            Minutes = Seconds / 60;
+            Seconds = Seconds % 60;
+            Milliseconds = (int) (UpdateTime % 1000);
+            tvTimer.setText(
+                    convertDate(Hours) + ":"
+                            + convertDate(Minutes) + ":"
+                            + String.format("%02d", Seconds) + ":"
+                            + String.format("%03d", Milliseconds)
+            );
+            handler.postDelayed(this, 0);
+        }
+
+    };
+
+    com.app.smartwatchapp.Services.LocationServices locationServices;
+    boolean isGPSServiceBound = false;
+    private final ServiceConnection GPSServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            LocalBinder binder = (LocalBinder) iBinder;
+            locationServices = binder.getServiceInstance();
+            isGPSServiceBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
 
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
         /**
@@ -66,7 +103,6 @@ public class MapFragment extends Fragment {
         root = binding.getRoot();
         context = getActivity();
         ((TextView) root.findViewById(R.id.tv_welcome)).setText("Journey");
-
         return root;
     }
 
@@ -75,10 +111,6 @@ public class MapFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-
-    long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L;
-    Handler handler;
-    int Hours, Seconds, Minutes, Milliseconds;
 
     @Override
 
@@ -95,13 +127,19 @@ public class MapFragment extends Fragment {
         tvAccuracy = view.findViewById(R.id.tv_accuracy);
         tvSpeed = view.findViewById(R.id.tv_speed);
         tvAltitude = view.findViewById(R.id.tv_altitude);
+        tvBloodPressure = view.findViewById(R.id.tv_blood_pressure);
+        tvBloodOxygenLevel = view.findViewById(R.id.tv_blood_oxygen);
+        tvHeartRate = view.findViewById(R.id.tv_heart_rate);
+
         ImageView ivJourneyStart = view.findViewById(R.id.iv_start);
         ImageView ivJourneyStop = view.findViewById(R.id.iv_stop);
 
         handler = new Handler();
 
         ivJourneyStart.setOnClickListener(v -> {
+            AppConstants.watchReadingsList = new ArrayList<>();
             AppConstants.locationList = new ArrayList<>();
+
             serviceIntent = new Intent(getActivity(), com.app.smartwatchapp.Services.LocationServices.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Log.d("SERVICE", "STARTING SERVICE");
@@ -129,27 +167,6 @@ public class MapFragment extends Fragment {
         });
     }
 
-
-
-
-    public Runnable runnable = new Runnable() {
-        public void run() {
-            MillisecondTime = SystemClock.uptimeMillis() - StartTime;
-            UpdateTime = TimeBuff + MillisecondTime;
-            Seconds = (int) (UpdateTime / 1000);
-            Minutes = Seconds / 60;
-            Seconds = Seconds % 60;
-            Milliseconds = (int) (UpdateTime % 1000);
-            tvTimer.setText(
-                    convertDate(Hours) + ":"
-                            + convertDate(Minutes) + ":"
-                            + String.format("%02d", Seconds) + ":"
-                            + String.format("%03d", Milliseconds)
-            );
-            handler.postDelayed(this, 0);
-        }
-
-    };
     private String convertDate(int input) {
         if (input >= 10) {
             return String.valueOf(input);
@@ -157,20 +174,4 @@ public class MapFragment extends Fragment {
             return "0" + input;
         }
     }
-
-    com.app.smartwatchapp.Services.LocationServices locationServices;
-    boolean isGPSServiceBound = false;
-    private final ServiceConnection GPSServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            LocalBinder binder = (LocalBinder) iBinder;
-            locationServices = binder.getServiceInstance();
-            isGPSServiceBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
 }
