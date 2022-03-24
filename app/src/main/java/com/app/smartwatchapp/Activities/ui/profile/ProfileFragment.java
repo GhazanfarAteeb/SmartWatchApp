@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import com.app.smartwatchapp.R;
 import com.app.smartwatchapp.databinding.FragmentProfileBinding;
 
-
 public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;

@@ -12,13 +12,11 @@ import com.app.smartwatchapp.databinding.ActivityFragmentsMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class FragmentsMainActivity extends AppCompatActivity {
-
     private ActivityFragmentsMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityFragmentsMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
