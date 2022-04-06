@@ -50,20 +50,29 @@ import java.util.List;
 
 @SuppressLint("SetTextI18n")
 public class HomeFragment extends Fragment {
+//    FRAGMENT VIEW
     View root;
     Context context;
+
+    //CONNECTED WATCH CARD VIEW
     CardView cvWatch;
+
+    //FOR SCANNING
     private final List<CRPScanDevice> scanDeviceList = new ArrayList<>();
     private final List<Watch> watchList = new ArrayList<>();
-    RecyclerView rvWatchList;
 
+    //TO SHOW LIST OF AVAILABLE DEVICES
+    RecyclerView rvWatchList;
     AdapterWatch adapterWatch;
+
+    //COMPARING THE SCANNED DEVICES
     public static final Comparator<CRPScanDevice> SORTING_COMPARATOR = Comparator.comparing(crpScanDevice -> crpScanDevice.getDevice().getAddress());
 
-
+    //CONNECTED WATCH CARD VIEW
     TextView tvWatchName, tvWatchMACAddress;
     public TextView tvHeartRate, tvBloodOxygen, tvBloodPressure;
     ImageView ivUnlink;
+
     ProgressDialog progressDialog;
 
 
@@ -163,12 +172,15 @@ public class HomeFragment extends Fragment {
             });
         };
         adapterWatch.setChangeStateCallback(sendState);
+
+        //IF OUR DEVICE IS CONNECTED THEN IT WILL SET THE CURRENT DATA OF BP, HR AND SPO2
         if (AppConstants.connectedWatch != null) {
             setWatchData();
             tvHeartRate.setText(AppConstants.currentWatchReadings.getHeartRate() + " BPM");
             tvBloodOxygen.setText(AppConstants.currentWatchReadings.getBloodOxygenLevel() + " %");
             tvBloodPressure.setText(AppConstants.currentWatchReadings.getSystolicBloodPressure() + "/" + AppConstants.currentWatchReadings.getDiastolicBloodPressure());
         }
+        //IF BLUETOOTH IS NOT ENABLED
         if (!App.getBleClient(context).isBluetoothEnable()) {
             startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), AppConstants.BLUETOOTH_REQUEST_CODE);
         } else {

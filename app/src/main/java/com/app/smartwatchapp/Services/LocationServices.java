@@ -126,8 +126,7 @@ public class LocationServices extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setOngoing(true)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setContentText("ABC");
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         final Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
         startIntent.setAction(Intent.ACTION_MAIN);
